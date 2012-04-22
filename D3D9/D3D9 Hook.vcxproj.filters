@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{e0a68ef5-7677-462e-8802-d31af1aa58e9}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\d3d9_c">
+      <UniqueIdentifier>{1f6a9b0e-9e57-4ca7-91d7-c12145343019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8041e37d-0f79-4e7c-985d-44bbf1a9e013}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\d3d9_h">
+      <UniqueIdentifier>{bab1071e-95e4-4843-b9d5-a5ddc9717d90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{5f220ca7-2b82-4b70-a484-b5f636f808f9}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="d3d9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d9dev.cpp">
+      <Filter>Source Files\d3d9_c</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d9int.cpp">
+      <Filter>Source Files\d3d9_c</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d9tex.cpp">
+      <Filter>Source Files\d3d9_c</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d3d9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d9dev.h">
+      <Filter>Header Files\d3d9_h</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d9int.h">
+      <Filter>Header Files\d3d9_h</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d9tex.h">
+      <Filter>Header Files\d3d9_h</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
