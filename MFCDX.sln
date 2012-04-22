@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo", "Demo\demo.vcxproj", "{78352A2C-B8D6-F0CC-E104-E91F6EF7C706}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D9 Hook", "D3D9\D3D9 Hook.vcxproj", "{CC6BB072-5E73-BD94-2847-AA885DFC4FAD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D8 Hook", "D3D8\D3D8 Hook.vcxproj", "{1A4D813D-D552-176C-3ECA-B60C6B752382}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injector", "Injector\Injector.vcxproj", "{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78352A2C-B8D6-F0CC-E104-E91F6EF7C706}.Debug|Win32.ActiveCfg = Debug|Win32
+		{78352A2C-B8D6-F0CC-E104-E91F6EF7C706}.Debug|Win32.Build.0 = Debug|Win32
+		{78352A2C-B8D6-F0CC-E104-E91F6EF7C706}.Release|Win32.ActiveCfg = Release|Win32
+		{78352A2C-B8D6-F0CC-E104-E91F6EF7C706}.Release|Win32.Build.0 = Release|Win32
+		{CC6BB072-5E73-BD94-2847-AA885DFC4FAD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CC6BB072-5E73-BD94-2847-AA885DFC4FAD}.Debug|Win32.Build.0 = Debug|Win32
+		{CC6BB072-5E73-BD94-2847-AA885DFC4FAD}.Release|Win32.ActiveCfg = Release|Win32
+		{CC6BB072-5E73-BD94-2847-AA885DFC4FAD}.Release|Win32.Build.0 = Release|Win32
+		{1A4D813D-D552-176C-3ECA-B60C6B752382}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1A4D813D-D552-176C-3ECA-B60C6B752382}.Debug|Win32.Build.0 = Debug|Win32
+		{1A4D813D-D552-176C-3ECA-B60C6B752382}.Release|Win32.ActiveCfg = Release|Win32
+		{1A4D813D-D552-176C-3ECA-B60C6B752382}.Release|Win32.Build.0 = Release|Win32
+		{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}.Debug|Win32.Build.0 = Debug|Win32
+		{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}.Release|Win32.ActiveCfg = Release|Win32
+		{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
