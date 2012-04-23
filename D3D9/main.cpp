@@ -29,6 +29,7 @@
 #include <windows.h>
 #include <fstream>
 #include <stdio.h>
+#include <time.h>
 using namespace std;
 
 #include "main.h"
@@ -128,6 +129,10 @@ void __cdecl add_log (const char *fmt, ...)
 	{
 		if(!fmt) { return; }
 
+		char buff[20];
+		time_t now = time(NULL);
+		strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
+
 		va_list va_alist;
 		char logbuf[256] = {0};
 
@@ -135,6 +140,6 @@ void __cdecl add_log (const char *fmt, ...)
 		_vsnprintf (logbuf+strlen(logbuf), sizeof(logbuf) - strlen(logbuf), fmt, va_alist);
 		va_end (va_alist);
 
-		ofile << logbuf << endl;
+		ofile << buff << " - " << logbuf << endl;
 	}
 }

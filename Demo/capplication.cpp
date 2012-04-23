@@ -82,20 +82,20 @@ RegisterClassEx(&WindowClass);
 m_hWindow = CreateWindowEx(WS_EX_CONTROLPARENT,"ClassName",TITLE,WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE,(DesktopSize.right - WINDOW_X) / 2,(DesktopSize.bottom - WINDOW_Y) / 2,WINDOW_X,WINDOW_Y,NULL,NULL,GetModuleHandle(NULL),NULL);
 
 //create window elements
-m_hLblResolution = CreateWindow("static","Resolution:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,24,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hCbResolution = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,20,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hLblBackBuffer = CreateWindow("static","Backbuffer Format:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,54,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hCbBackBuffer = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,50,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hLblDepthStencil = CreateWindow("static","DepthStencil Format:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,84,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hCbDepthStencil = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,80,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hLblVertexProcessing = CreateWindow("static","Vertex Processing:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,144,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hCbVertexProcessing = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,140,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hLblMultiSampling = CreateWindow("static","MultiSampling:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,174,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hCbMultiSampling = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,170,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hLblAnisotropy = CreateWindow("static","Anisotropy:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,204,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hCbAnisotropy = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,200,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hBtnStart = CreateWindow("button","Start",WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,65,250,80,24,m_hWindow,(HMENU)ID_START,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
-m_hBtnCancel = CreateWindow("button","Cancel",WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,175,250,80,24,m_hWindow,(HMENU)ID_CANCEL,(HINSTANCE)GetWindowLong(m_hWindow,GWL_HINSTANCE),NULL);
+m_hLblResolution = CreateWindow("static","Resolution:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,24,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hCbResolution = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,20,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hLblBackBuffer = CreateWindow("static","Backbuffer Format:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,54,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hCbBackBuffer = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,50,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hLblDepthStencil = CreateWindow("static","DepthStencil Format:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,84,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hCbDepthStencil = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,80,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hLblVertexProcessing = CreateWindow("static","Vertex Processing:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,144,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hCbVertexProcessing = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,140,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hLblMultiSampling = CreateWindow("static","MultiSampling:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,174,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hCbMultiSampling = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,170,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hLblAnisotropy = CreateWindow("static","Anisotropy:",WS_CHILD | WS_VISIBLE | SS_LEFT,20,204,200,18,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hCbAnisotropy = CreateWindow("combobox", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP,160,200,160,100,m_hWindow,NULL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hBtnStart = CreateWindow("button","Start",WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,65,250,80,24,m_hWindow,(HMENU)ID_START,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
+m_hBtnCancel = CreateWindow("button","Cancel",WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,175,250,80,24,m_hWindow,(HMENU)ID_CANCEL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
 
 //fill combo boxes
 SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"640 x 480");

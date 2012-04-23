@@ -83,7 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 0;
 	}
 
-	MessageBox(0, "\MFCDX Injector\n Press \'END\' to exit without injection ", "MFCDX", 0);
+	MessageBox(0, "MFCDX Injector\n Press \'END\' to exit without injection ", "MFCDX", 0);
 	
 	while(!GetProcessOf(APP_EXE, &pe32))
 	{
