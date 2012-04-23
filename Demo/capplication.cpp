@@ -98,35 +98,35 @@ m_hBtnStart = CreateWindow("button","Start",WS_CHILD | WS_VISIBLE | BS_PUSHBUTTO
 m_hBtnCancel = CreateWindow("button","Cancel",WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,175,250,80,24,m_hWindow,(HMENU)ID_CANCEL,(HINSTANCE)GetWindowLongPtr(m_hWindow,GWLP_HINSTANCE),NULL);
 
 //fill combo boxes
-SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"640 x 480");
-SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"800 x 600");
-SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"1024 x 768");
-SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"1152 x 864");
-SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"1280 x 960");
-SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"1280 x 1024");
-SendMessage(m_hCbResolution,CB_ADDSTRING,0,(long)"1600 x 1200");
+SendMessage(m_hCbResolution,CB_ADDSTRING,0,(ULONG_PTR)"640 x 480");
+SendMessage(m_hCbResolution,CB_ADDSTRING,0,(ULONG_PTR)"800 x 600");
+SendMessage(m_hCbResolution,CB_ADDSTRING,0,(ULONG_PTR)"1024 x 768");
+SendMessage(m_hCbResolution,CB_ADDSTRING,0,(ULONG_PTR)"1152 x 864");
+SendMessage(m_hCbResolution,CB_ADDSTRING,0,(ULONG_PTR)"1280 x 960");
+SendMessage(m_hCbResolution,CB_ADDSTRING,0,(ULONG_PTR)"1280 x 1024");
+SendMessage(m_hCbResolution,CB_ADDSTRING,0,(ULONG_PTR)"1600 x 1200");
 
-SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(long)"D3DFMT_R5G6B5");
-SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(long)"D3DFMT_A1R5G5B5");
-SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(long)"D3DFMT_X8R8G8B8");
-SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(long)"D3DFMT_A8R8G8B8");
+SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(ULONG_PTR)"D3DFMT_R5G6B5");
+SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(ULONG_PTR)"D3DFMT_A1R5G5B5");
+SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(ULONG_PTR)"D3DFMT_X8R8G8B8");
+SendMessage(m_hCbBackBuffer,CB_ADDSTRING,0,(ULONG_PTR)"D3DFMT_A8R8G8B8");
 
-SendMessage(m_hCbDepthStencil,CB_ADDSTRING,0,(long)"D3DFMT_D16");
-SendMessage(m_hCbDepthStencil,CB_ADDSTRING,0,(long)"D3DFMT_D24S8");
-SendMessage(m_hCbDepthStencil,CB_ADDSTRING,0,(long)"D3DFMT_D32");
+SendMessage(m_hCbDepthStencil,CB_ADDSTRING,0,(ULONG_PTR)"D3DFMT_D16");
+SendMessage(m_hCbDepthStencil,CB_ADDSTRING,0,(ULONG_PTR)"D3DFMT_D24S8");
+SendMessage(m_hCbDepthStencil,CB_ADDSTRING,0,(ULONG_PTR)"D3DFMT_D32");
 
-SendMessage(m_hCbVertexProcessing,CB_ADDSTRING,0,(long)"Software");
-SendMessage(m_hCbVertexProcessing,CB_ADDSTRING,0,(long)"Hardware");
+SendMessage(m_hCbVertexProcessing,CB_ADDSTRING,0,(ULONG_PTR)"Software");
+SendMessage(m_hCbVertexProcessing,CB_ADDSTRING,0,(ULONG_PTR)"Hardware");
 
-SendMessage(m_hCbMultiSampling,CB_ADDSTRING,0,(long)"No FSAA");
-SendMessage(m_hCbMultiSampling,CB_ADDSTRING,0,(long)"2x FSAA");
-SendMessage(m_hCbMultiSampling,CB_ADDSTRING,0,(long)"4x FSAA");
+SendMessage(m_hCbMultiSampling,CB_ADDSTRING,0,(ULONG_PTR)"No FSAA");
+SendMessage(m_hCbMultiSampling,CB_ADDSTRING,0,(ULONG_PTR)"2x FSAA");
+SendMessage(m_hCbMultiSampling,CB_ADDSTRING,0,(ULONG_PTR)"4x FSAA");
 
-SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(long)"No AF");
-SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(long)"2x AF");
-SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(long)"4x AF");
-SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(long)"8x AF");
-SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(long)"16x AF");
+SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(ULONG_PTR)"No AF");
+SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(ULONG_PTR)"2x AF");
+SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(ULONG_PTR)"4x AF");
+SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(ULONG_PTR)"8x AF");
+SendMessage(m_hCbAnisotropy,CB_ADDSTRING,0,(ULONG_PTR)"16x AF");
 
 //load settings from file
 LoadSettings();
