@@ -1,11 +1,4 @@
-/***********************************************\
-*	Program : Tatnium Injector					*
-*	Author : Matthew L (Azorbix)				*
-*	Date : December 22nd, 2003					*
-*	Credits:	Y0DA, OGC guys, RetarT, Mstr	*
-*				LanceVorgin, P47R!CK, VisPrfn	*
-\***********************************************/
-//you will need VC++ .net or VC++6.0 w/ service packs
+
 
 #include <windows.h>
 #include <tlhelp32.h>
@@ -14,7 +7,7 @@
 #include "forcelib\forcelib.h"
 #define WIN32_LEAN_AND_MEAN
 
-#define APP_EXE "dcs.exe" //change this!!!
+#define APP_EXE "dcs.exe"
 
 bool GetProcessOf(char exename[], PROCESSENTRY32 *process)
 {
@@ -72,10 +65,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	PROCESSENTRY32 pe32;
 	THREADENTRY32 te32;
 
-	HANDLE handle = CreateMutex(NULL, true, "ttn5loader");
+	HANDLE handle = CreateMutex(NULL, true, "mfcdx_loader");
 	if(GetLastError() != ERROR_SUCCESS)
 	{
-		MessageBox(0, "Process is already running", "Tatnium Warning", MB_ICONWARNING);
+		MessageBox(0, "Process is already running", "MFCDX", MB_ICONWARNING);
 		return 0;
 	}
 
@@ -86,11 +79,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if(!fileExists(dllname))
 	{
-		MessageBox(0, "Could not find dll", "Tatnium Error", MB_ICONERROR);
+		MessageBox(0, "Error: Could not find dll", "MFCDX", MB_ICONERROR);
 		return 0;
 	}
 
-	MessageBox(0, "\tTatnium Injector\n Press \'END\' to exit without injection ", "Tatnium Injector", 0);
+	MessageBox(0, "\MFCDX Injector\n Press \'END\' to exit without injection ", "MFCDX", 0);
 	
 	while(!GetProcessOf(APP_EXE, &pe32))
 	{
@@ -112,7 +105,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if(!ForceLibrary(dllname, &PI))
 	{
 		TerminateProcess(PI.hProcess, 0);
-		MessageBox(0, "Could not inject dll", "Tatnium Error", MB_ICONERROR);
+		MessageBox(0, "Error: Could not inject dll", "MFCDX", MB_ICONERROR);
 	}
 
 	CloseHandle(PI.hProcess);

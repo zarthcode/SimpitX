@@ -46,9 +46,9 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 
 		GetModuleFileName(hDll, dlldir, 512);
 		for(int i = strlen(dlldir); i > 0; i--) { if(dlldir[i] == '\\') { dlldir[i+1] = 0; break; } }
-		ofile.open(GetDirectoryFile("ttnlog.txt"), ios::trunc);
+		ofile.open(GetDirectoryFile("d3d9hook.txt"), ios::trunc);
 
-		add_log("\n---------------------\nTatniumD3D Started...\n---------------------");
+		add_log("\n---------------------\nD3D9Hook Started...\n---------------------");
 
 		char sysd3d[320];
 		GetSystemDirectory(sysd3d, 320);
@@ -70,7 +70,7 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 
 	else if(dwReason == DLL_PROCESS_DETACH)
 	{
-		add_log("---------------------\nTatniumD3D Exiting...\n---------------------\n");
+		add_log("---------------------\nD3D9Hook Exiting...\n---------------------\n");
 		if(ofile) { ofile.close(); }
 	}
 
