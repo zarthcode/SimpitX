@@ -14,7 +14,7 @@
 #include "forcelib\forcelib.h"
 #define WIN32_LEAN_AND_MEAN
 
-#define APP_EXE "target_application.exe" //change this!!!
+#define APP_EXE "dcs.exe" //change this!!!
 
 bool GetProcessOf(char exename[], PROCESSENTRY32 *process)
 {

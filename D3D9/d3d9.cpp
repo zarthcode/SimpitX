@@ -7,7 +7,10 @@ tDirect3DCreate9 oDirect3DCreate9;
 
 IDirect3D9 *APIENTRY hkDirect3DCreate9(UINT SDKVersion)
 {
+	add_log("Create Device Started...");
+	add_log("\tCalling oDirect3DCreate9(%u)...", SDKVersion);
 	IDirect3D9 *d3dint = oDirect3DCreate9(SDKVersion);
+	add_log("...Device created successfully!");
 
 	if( d3dint != NULL )
 	{

@@ -46,17 +46,25 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 
 		GetModuleFileName(hDll, dlldir, 512);
 		for(int i = strlen(dlldir); i > 0; i--) { if(dlldir[i] == '\\') { dlldir[i+1] = 0; break; } }
-		ofile.open(GetDirectoryFile("ttnlog.txt"), ios::app);
+		ofile.open(GetDirectoryFile("ttnlog.txt"), ios::trunc);
 
 		add_log("\n---------------------\nTatniumD3D Started...\n---------------------");
 
-		HMODULE hMod = LoadLibrary("d3d9.dll");		
-	
+		char sysd3d[320];
+		GetSystemDirectory(sysd3d, 320);
+		strcat(sysd3d, "\\d3d9.dll");
+
+		add_log("LoadLibrary(\"%s\")", sysd3d);
+		HMODULE hMod = LoadLibrary(sysd3d);	
+		add_log("\t...result 0x%x", hMod);
+
+		add_log("Registering D3D9 Detour.");
 		oDirect3DCreate9 = (tDirect3DCreate9)DetourFunc(
 			(BYTE*)GetProcAddress(hMod, "Direct3DCreate9"),
 			(BYTE*)hkDirect3DCreate9, 
 			5);
 
+		add_log("Detour created (0x%x)", oDirect3DCreate9);
 		return true;
 	}
 
@@ -81,6 +89,8 @@ void *DetourFunc(BYTE *src, const BYTE *dst, const int len)
 {
 	BYTE *jmp = (BYTE*)malloc(len+5);
 	DWORD dwback;
+
+	VirtualProtect(jmp, len+5, PAGE_EXECUTE_READWRITE, &dwback);	// Needed to work on Win 7?
 
 	VirtualProtect(src, len, PAGE_READWRITE, &dwback);
 

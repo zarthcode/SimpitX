@@ -110,7 +110,7 @@ while(g_App.GetD3DStatus())
   g_App.GetDevice()->EndScene();
   g_App.GetDevice()->Present(NULL,NULL,NULL,NULL);
 
-  fRotation += 0.001f;
+  fRotation += 0.01f;
   }
  }
 
