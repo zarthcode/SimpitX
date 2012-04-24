@@ -4,10 +4,17 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "Demo\demo.vcxproj", "{78352A2C-B8D6-F0CC-E104-E91F6EF7C706}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D9 Hook", "D3D9\D3D9 Hook.vcxproj", "{CC6BB072-5E73-BD94-2847-AA885DFC4FAD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{65021938-D251-46FA-BC3D-85C385D4C06D} = {65021938-D251-46FA-BC3D-85C385D4C06D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D8 Hook", "D3D8\D3D8 Hook.vcxproj", "{1A4D813D-D552-176C-3ECA-B60C6B752382}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injector", "Injector\Injector.vcxproj", "{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "newloader", "NewLoader\newloader.vcxproj", "{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libMinHook", "MinHook\libMinHook.vcxproj", "{65021938-D251-46FA-BC3D-85C385D4C06D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +54,22 @@ Global
 		{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}.Release|Win32.Build.0 = Release|Win32
 		{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}.Release|x64.ActiveCfg = Release|x64
 		{C3300E29-2EFC-B0FA-1F4E-3F91FC9C398F}.Release|x64.Build.0 = Release|x64
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Debug|Win32.Build.0 = Debug|Win32
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Debug|x64.ActiveCfg = Debug|x64
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Debug|x64.Build.0 = Debug|x64
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Release|Win32.ActiveCfg = Release|Win32
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Release|Win32.Build.0 = Release|Win32
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Release|x64.ActiveCfg = Release|x64
+		{E6FB3BF5-D7C9-42D3-8866-8C64D15FC2E9}.Release|x64.Build.0 = Release|x64
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Debug|Win32.Build.0 = Debug|Win32
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Debug|x64.ActiveCfg = Debug|x64
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Debug|x64.Build.0 = Debug|x64
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Release|Win32.ActiveCfg = Release|Win32
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Release|Win32.Build.0 = Release|Win32
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Release|x64.ActiveCfg = Release|x64
+		{65021938-D251-46FA-BC3D-85C385D4C06D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

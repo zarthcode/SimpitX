@@ -36,6 +36,9 @@
     <ClCompile Include="d3d9tex.cpp">
       <Filter>Source Files\d3d9_c</Filter>
     </ClCompile>
+    <ClCompile Include="detours.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d9.h">
@@ -52,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="d3d9tex.h">
       <Filter>Header Files\d3d9_h</Filter>
+    </ClInclude>
+    <ClInclude Include="detours.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

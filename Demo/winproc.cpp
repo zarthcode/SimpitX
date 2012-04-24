@@ -21,20 +21,20 @@ switch(uMessage)
    {
    //start button pressed
    case ID_START:
-    {
-    //switch to D3D loop and init D3D with settings
-    g_App.SaveSettings();
+	{
+	//switch to D3D loop and init D3D with settings
+	g_App.SaveSettings();
 	g_App.SetWindowStatus(false);
 	g_App.SetD3DStatus(true);
 	SetFocus(hWindow);
-    g_App.InitD3D();
-    break;
+	g_App.InitD3D();
+	break;
 	}
    //cancel button pressed
    case ID_CANCEL:
-    {
-    DestroyWindow(hWindow);
-    break;
+	{
+	DestroyWindow(hWindow);
+	break;
 	}
    }
   return 0;
@@ -44,10 +44,10 @@ switch(uMessage)
   switch(wparam)
    {
    case VK_ESCAPE:	
-    {
-    DestroyWindow(hWindow);
-    break;
-    }
+	{
+	DestroyWindow(hWindow);
+	break;
+	}
    }
   return 0;
   }

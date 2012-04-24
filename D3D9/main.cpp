@@ -34,6 +34,7 @@ using namespace std;
 
 #include "main.h"
 #include "d3d9.h"
+#include "MinHook.h"
 
 //Globals
 ofstream ofile;	
@@ -41,6 +42,7 @@ char dlldir[320];
 
 bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 {
+
 	if(dwReason == DLL_PROCESS_ATTACH)
 	{
 		DisableThreadLibraryCalls(hDll);
@@ -60,10 +62,31 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 		add_log("\t...result 0x%x", hMod);
 
 		add_log("Registering D3D9 Detour.");
-		oDirect3DCreate9 = (tDirect3DCreate9)DetourFunc(
-			(BYTE*)GetProcAddress(hMod, "Direct3DCreate9"),
-			(BYTE*)hkDirect3DCreate9, 
-			5);
+		
+		
+		
+		// oDirect3DCreate9 = (tDirect3DCreate9)DETOUR(GetProcAddress(hMod, "Direct3DCreate9"),	hkDirect3DCreate9, 5);
+		// Initialize MinHook.
+		if (MH_Initialize() != MH_OK)
+		{
+			add_log("MinHook Init failed.");
+			return false;
+		}
+
+		// Create a hook for MessageBoxW, in disabled state.
+		if (MH_CreateHook(GetProcAddress(hMod, "Direct3DCreate9"), hkDirect3DCreate9, 
+			reinterpret_cast<void**>(&oDirect3DCreate9)) != MH_OK)
+		{
+			add_log("MinHook Create failed.");
+			return false;
+		}
+
+		// Enable the hook for MessageBoxW.
+		if (MH_EnableHook(GetProcAddress(hMod, "Direct3DCreate9")) != MH_OK)
+		{
+			add_log("MinHook Enable failed.");
+			return false;
+		}
 
 		add_log("Detour created (0x%x)", oDirect3DCreate9);
 		return true;
@@ -75,7 +98,7 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 		if(ofile) { ofile.close(); }
 	}
 
-    return false;
+	return false;
 }
 
 char *GetDirectoryFile(char *filename)
@@ -85,43 +108,6 @@ char *GetDirectoryFile(char *filename)
 	strcat(path, filename);
 	return path;
 }
-
-void *DetourFunc(BYTE *src, const BYTE *dst, const int len)
-{
-	BYTE *jmp = (BYTE*)malloc(len+5);
-	DWORD dwback;
-
-	VirtualProtect(jmp, len+5, PAGE_EXECUTE_READWRITE, &dwback);	// Needed to work on Win 7?
-
-	VirtualProtect(src, len, PAGE_READWRITE, &dwback);
-
-	memcpy(jmp, src, len);	jmp += len;
-	
-	jmp[0] = 0xE9;
-	*(DWORD*)(jmp+1) = (DWORD)(src+len - jmp) - 5;
-
-	src[0] = 0xE9;
-	*(DWORD*)(src+1) = (DWORD)(dst - src) - 5;
-
-	VirtualProtect(src, len, dwback, &dwback);
-
-	return (jmp-len);
-}
-
-bool RetourFunc(BYTE *src, BYTE *restore, const int len)
-{
-	DWORD dwback;
-		
-	if(!VirtualProtect(src, len, PAGE_READWRITE, &dwback))	{ return false; }
-	if(!memcpy(src, restore, len))							{ return false; }
-
-	restore[0] = 0xE9;
-	*(DWORD*)(restore+1) = (DWORD)(src - restore) - 5;
-
-	if(!VirtualProtect(src, len, dwback, &dwback))			{ return false; }
-	
-	return true;
-}	
 
 void __cdecl add_log (const char *fmt, ...)
 {
