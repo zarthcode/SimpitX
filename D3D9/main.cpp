@@ -49,7 +49,7 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 
 		GetModuleFileName(hDll, dlldir, 512);
 		for(int i = strlen(dlldir); i > 0; i--) { if(dlldir[i] == '\\') { dlldir[i+1] = 0; break; } }
-		ofile.open(GetDirectoryFile("d3d9hook.txt"), ios::trunc);
+		ofile.open(GetDirectoryFile("d3d9hook.log"), ios::trunc);
 
 		add_log("\n---------------------\nD3D9Hook Started...\n---------------------");
 
