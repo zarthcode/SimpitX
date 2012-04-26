@@ -19,6 +19,10 @@
 *.rar
 *.tar
 
+# Application Generated Files #
+###############################
+*.cfg
+
 # Logs and databases #
 ######################
 *.log
