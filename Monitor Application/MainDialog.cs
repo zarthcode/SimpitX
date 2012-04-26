@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace Monitor_Application
 {
@@ -15,6 +17,9 @@ namespace Monitor_Application
         {
             InitializeComponent();
         }
+
+        SerializableDictionary<String, SerializableDictionary<String, String>> GameSettingsDictionary;
+
 
         /// <summary>
         ///  Load settings from disk and initialize application.
@@ -27,6 +32,9 @@ namespace Monitor_Application
 
             // Load Plugins
 
+            // Load Games
+            loadGameConfig();       
+
             // Load Session Data
             this.lastSessionName.Text = Monitor_Application.Properties.Settings.Default.lastSessionGame;
             this.lastSessionTime.Text = Monitor_Application.Properties.Settings.Default.lastSessionTime;
@@ -37,9 +45,10 @@ namespace Monitor_Application
             this.minimizeToTrayBox.Checked = Monitor_Application.Properties.Settings.Default.MinimizeToTray;
 
             // Polling settings
+            this.pollingRate.Value = Monitor_Application.Properties.Settings.Default.PollingRate;
             this.pollOnStartup.Checked = Monitor_Application.Properties.Settings.Default.PollOnStartup;
             this.enablePollingCheckbox.Checked = this.pollOnStartup.Checked;
-            this.pollingRate.Value = Monitor_Application.Properties.Settings.Default.PollingRate;
+            
 
 
 
@@ -62,12 +71,23 @@ namespace Monitor_Application
         private void enablePollingCheckbox_CheckedChanged(object sender, EventArgs e)
         {
 
-            // Start/Stop polling timer
+            // Start/Stop polling timer.
+            pollingTimer.Enabled = enablePollingCheckbox.Checked;
+
 
         }
 
+        private bool Tick = true;
+
         private void pollingTimer_Tick(object sender, EventArgs e)
         {
+            
+
+            if(Tick = !Tick)
+                Console.WriteLine("Tick()");
+            else
+                Console.WriteLine("Tock()");
+
             // Obtain a list of running processes.
 
 
@@ -89,10 +109,32 @@ namespace Monitor_Application
 
         }
 
-        private void loadGames()
+        private void loadGameConfig()
         {
 
-            // Open 
+            if (Monitor_Application.Properties.Settings.Default.gameSettingsXML.Length == 0)
+                return;
+
+            // Open XML and restore game settings
+            StringReader sr = new StringReader(Monitor_Application.Properties.Settings.Default.gameSettingsXML);
+            
+            XmlSerializer deserializer = new XmlSerializer(typeof(SerializableDictionary<String,SerializableDictionary<String, String>>));
+
+            GameSettingsDictionary = (SerializableDictionary<String, SerializableDictionary<String, String>>)deserializer.Deserialize(sr);
+            
+
+        }
+
+        private void saveGameConfig()
+        {
+
+            // Serialize the config to xml.
+            XmlSerializer serializer = new XmlSerializer(typeof(SerializableDictionary<String, SerializableDictionary<String, String>>));
+            StringWriter sw = new StringWriter();
+
+            serializer.Serialize(sw, GameSettingsDictionary);
+         
+            Monitor_Application.Properties.Settings.Default.gameSettingsXML = sw.ToString();
 
         }
 
@@ -110,8 +152,22 @@ namespace Monitor_Application
 
             Monitor_Application.Properties.Settings.Default.runOnStartup = this.runOnStartupCheckBox.Checked;
 
+            // Save Configured Games
+            saveGameConfig();
+            
+
+
+
             Monitor_Application.Properties.Settings.Default.Save();
 
+        }
+
+        private void pollingRate_ValueChanged(object sender, EventArgs e)
+        {
+            if (pollingRate.Value <= 0)
+                pollingRate.Value = 1;
+
+            pollingTimer.Interval = (int)pollingRate.Value;
         }
     }
 }

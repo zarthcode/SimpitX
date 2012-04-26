@@ -118,5 +118,17 @@ namespace Monitor_Application.Properties {
                 this["runOnStartup"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string gameSettingsXML {
+            get {
+                return ((string)(this["gameSettingsXML"]));
+            }
+            set {
+                this["gameSettingsXML"] = value;
+            }
+        }
     }
 }
