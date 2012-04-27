@@ -20,6 +20,8 @@ namespace Monitor_Application
 
         SerializableDictionary<String, SerializableDictionary<String, String>> GameSettingsDictionary;
 
+        // WMI Process Watcher
+        ProcessWatcher procWatcher;
 
         /// <summary>
         ///  Load settings from disk and initialize application.
@@ -83,13 +85,6 @@ namespace Monitor_Application
         {
             
 
-            if(Tick = !Tick)
-                Console.WriteLine("Tick()");
-            else
-                Console.WriteLine("Tock()");
-
-            // Obtain a list of running processes.
-
 
             // If a game is running
 
@@ -112,6 +107,8 @@ namespace Monitor_Application
         private void loadGameConfig()
         {
 
+            AddProcessWatcher();
+
             if (Monitor_Application.Properties.Settings.Default.gameSettingsXML.Length == 0)
                 return;
 
@@ -121,6 +118,7 @@ namespace Monitor_Application
             XmlSerializer deserializer = new XmlSerializer(typeof(SerializableDictionary<String,SerializableDictionary<String, String>>));
 
             GameSettingsDictionary = (SerializableDictionary<String, SerializableDictionary<String, String>>)deserializer.Deserialize(sr);
+
             
 
         }
@@ -138,8 +136,36 @@ namespace Monitor_Application
 
         }
 
+        private void AddProcessWatcher()
+        {
+            procWatcher = new ProcessWatcher("dcs.exe");
+
+            procWatcher.ProcessCreated += new ProcessEventHandler(ProcessCreatedEventHandler);
+            // procWatcher.ProcessDeleted += new ProcessEventHandler(procWatcher_ProcessDeleted);
+            // procWatcher.ProcessModified += new ProcessEventHandler(procWatcher_ProcessModified);
+            procWatcher.Start();
+            // 
+            // // Do Work
+            // 
+            // procWatcher.Stop();
+
+        }
+
+        public void ProcessCreatedEventHandler(WMI.Win32.Win32_Process proc)
+        {
+            Console.WriteLine("Process Created:");
+            // Output some console info.
+            Console.WriteLine("Name:" + proc.Name);
+            Console.WriteLine("Path:" + proc.ExecutablePath);
+            Console.WriteLine("ProcessId: " + proc.ProcessId);
+
+        }
+
         private void MainDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
+
+            procWatcher.Stop();
+
             // Save settings.
 
             Monitor_Application.Properties.Settings.Default.MinimizeToTray = this.minimizeToTrayBox.Checked;
