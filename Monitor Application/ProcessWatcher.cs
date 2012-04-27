@@ -22,10 +22,13 @@ namespace Monitor_Application
         public String User;
     }
 
-    public delegate void ProcessEventHandler(WMI.Win32.Win32_Process proc);
+    public delegate void ProcessEventHandler(ProgramConfiguration parent, WMI.Win32.Win32_Process proc);
 
     public class ProcessWatcher : ManagementEventWatcher
     {
+
+        // GameConfiguration object this process watcher belongs to
+        ProgramConfiguration Parent;
 
         // Process Events
         public event ProcessEventHandler ProcessCreated;
@@ -37,14 +40,16 @@ namespace Monitor_Application
         
         static readonly string WMI_OPER_EVENT_QUERY_WITH_PROC = WMI_OPER_EVENT_QUERY + " and TargetInstance.Name = '{0}'";
 
-        public ProcessWatcher()
+        public ProcessWatcher(ProgramConfiguration MyParent)
         {
+            Parent = MyParent;
             Init(string.Empty);
         }
 
 
-        public ProcessWatcher(string processName)
+        public ProcessWatcher(ProgramConfiguration MyParent, string processName)
         {
+            Parent = MyParent;
             Init(processName);
         }
 
@@ -77,15 +82,15 @@ namespace Monitor_Application
             {
                 case "__InstanceCreationEvent":
                     if (ProcessCreated != null)
-                        ProcessCreated(proc);
+                        ProcessCreated(Parent, proc);
                     break;
                 case "__InstanceDeletionEvent":
                     if (ProcessDeleted != null)
-                        ProcessDeleted(proc);
+                        ProcessDeleted(Parent, proc);
                     break;
                 case "__InstanceModificationEvent":
                     if (ProcessModified != null)
-                        ProcessModified(proc);
+                        ProcessModified(Parent, proc);
                     break;
             }
         }

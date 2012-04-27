@@ -20,8 +20,6 @@ namespace Monitor_Application
 
         SerializableDictionary<String, SerializableDictionary<String, String>> GameSettingsDictionary;
 
-        // WMI Process Watcher
-        ProcessWatcher procWatcher;
 
         /// <summary>
         ///  Load settings from disk and initialize application.
@@ -31,11 +29,17 @@ namespace Monitor_Application
         private void MainDialog_Load(object sender, EventArgs e)
         {
             // Load values from settings.
+            LoadSettingsData();
 
-            // Load Plugins
+            
 
-            // Load Games
-            loadGameConfig();       
+
+
+        }
+
+
+        private void LoadSettingsData()
+        {
 
             // Load Session Data
             this.lastSessionName.Text = Monitor_Application.Properties.Settings.Default.lastSessionGame;
@@ -46,16 +50,43 @@ namespace Monitor_Application
             this.runOnStartupCheckBox.Checked = Monitor_Application.Properties.Settings.Default.runOnStartup;
             this.minimizeToTrayBox.Checked = Monitor_Application.Properties.Settings.Default.MinimizeToTray;
 
-            // Polling settings
-            this.pollingRate.Value = Monitor_Application.Properties.Settings.Default.PollingRate;
-            this.pollOnStartup.Checked = Monitor_Application.Properties.Settings.Default.PollOnStartup;
-            this.enablePollingCheckbox.Checked = this.pollOnStartup.Checked;
             
+            // Load Games configuration from XML
+            if (Monitor_Application.Properties.Settings.Default.gameSettingsXML.Length != 0)
+            {
+                StringReader sr = new StringReader(Monitor_Application.Properties.Settings.Default.gameSettingsXML);
 
+                XmlSerializer deserializer = new XmlSerializer(typeof(SerializableDictionary<String, SerializableDictionary<String, String>>));
+
+                GameSettingsDictionary = (SerializableDictionary<String, SerializableDictionary<String, String>>)deserializer.Deserialize(sr);
+            }
 
 
         }
 
+        private void SaveSettingsData()
+        {
+            // Save settings.
+
+            Monitor_Application.Properties.Settings.Default.MinimizeToTray = this.minimizeToTrayBox.Checked;
+
+            Monitor_Application.Properties.Settings.Default.lastSessionGame = this.lastSessionName.Text;
+            Monitor_Application.Properties.Settings.Default.lastSessionTime = this.lastSessionTime.Text;
+            Monitor_Application.Properties.Settings.Default.lastSessionErrors = this.lastSessionErrors.Text;
+
+            Monitor_Application.Properties.Settings.Default.runOnStartup = this.runOnStartupCheckBox.Checked;
+
+            // Serialize Games configuration to XML.
+            XmlSerializer serializer = new XmlSerializer(typeof(SerializableDictionary<String, SerializableDictionary<String, String>>));
+            StringWriter sw = new StringWriter();
+
+            serializer.Serialize(sw, GameSettingsDictionary);
+
+            Monitor_Application.Properties.Settings.Default.gameSettingsXML = sw.ToString();
+
+            // Save changes.
+            Monitor_Application.Properties.Settings.Default.Save();
+        }
 
         /// Save the log contents to a file
         private void saveButton_Click(object sender, EventArgs e)
@@ -70,80 +101,28 @@ namespace Monitor_Application
              
         }
 
-        private void enablePollingCheckbox_CheckedChanged(object sender, EventArgs e)
+      
+
+        private void InitGameConfiguration()
         {
+            // Create a separate game configuration object for each supported/configured game.
+      
 
-            // Start/Stop polling timer.
-            pollingTimer.Enabled = enablePollingCheckbox.Checked;
-
-
-        }
-
-        private bool Tick = true;
-
-        private void pollingTimer_Tick(object sender, EventArgs e)
-        {
             
-
-
-            // If a game is running
-
-                // check process status
-
-                    // If closed, restore polling state
-
-                
-
-            // Check against configured games/executables.
-
-                // If a match is found
-
-                    // Greatly reduce polling rate, temporarily.
-
-                    // Start the injector
-
-        }
-
-        private void loadGameConfig()
-        {
-
-            AddProcessWatcher();
-
-            if (Monitor_Application.Properties.Settings.Default.gameSettingsXML.Length == 0)
-                return;
-
-            // Open XML and restore game settings
-            StringReader sr = new StringReader(Monitor_Application.Properties.Settings.Default.gameSettingsXML);
-            
-            XmlSerializer deserializer = new XmlSerializer(typeof(SerializableDictionary<String,SerializableDictionary<String, String>>));
-
-            GameSettingsDictionary = (SerializableDictionary<String, SerializableDictionary<String, String>>)deserializer.Deserialize(sr);
 
             
 
         }
 
-        private void saveGameConfig()
+
+        private void AddGameConfiguration()
         {
+           // procWatcher = new ProcessWatcher("dcs.exe");
 
-            // Serialize the config to xml.
-            XmlSerializer serializer = new XmlSerializer(typeof(SerializableDictionary<String, SerializableDictionary<String, String>>));
-            StringWriter sw = new StringWriter();
-
-            serializer.Serialize(sw, GameSettingsDictionary);
-         
-            Monitor_Application.Properties.Settings.Default.gameSettingsXML = sw.ToString();
-
-        }
-
-        private void AddProcessWatcher()
-        {
-            procWatcher = new ProcessWatcher("dcs.exe");
-
-            procWatcher.ProcessCreated += new ProcessEventHandler(ProcessCreatedEventHandler);
+            // procWatcher.ProcessCreated += new ProcessEventHandler(ProcessCreatedEventHandler);
             // procWatcher.ProcessDeleted += new ProcessEventHandler(procWatcher_ProcessDeleted);
             // procWatcher.ProcessModified += new ProcessEventHandler(procWatcher_ProcessModified);
-            procWatcher.Start();
+            // procWatcher.Start();
             // 
             // // Do Work
             // 
@@ -153,47 +132,69 @@ namespace Monitor_Application
 
         public void ProcessCreatedEventHandler(WMI.Win32.Win32_Process proc)
         {
-            Console.WriteLine("Process Created:");
             // Output some console info.
+            Console.WriteLine("Process Created:");
             Console.WriteLine("Name:" + proc.Name);
             Console.WriteLine("Path:" + proc.ExecutablePath);
             Console.WriteLine("ProcessId: " + proc.ProcessId);
+
+            
+            // Minimize and enter "active" mode.
+            
+            // Locate the matching game settings entry
+
+
+            // Inject applicable plugins.
+
+
+
+
 
         }
 
         private void MainDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
 
-            procWatcher.Stop();
+            // Tear down program objects
+            
 
-            // Save settings.
 
-            Monitor_Application.Properties.Settings.Default.MinimizeToTray = this.minimizeToTrayBox.Checked;
-            Monitor_Application.Properties.Settings.Default.PollOnStartup = this.pollOnStartup.Checked;
-
-            Monitor_Application.Properties.Settings.Default.PollingRate = this.pollingRate.Value;
-            Monitor_Application.Properties.Settings.Default.lastSessionGame = this.lastSessionName.Text;
-            Monitor_Application.Properties.Settings.Default.lastSessionTime = this.lastSessionTime.Text;
-            Monitor_Application.Properties.Settings.Default.lastSessionErrors = this.lastSessionErrors.Text;
-
-            Monitor_Application.Properties.Settings.Default.runOnStartup = this.runOnStartupCheckBox.Checked;
-
-            // Save Configured Games
-            saveGameConfig();
+            // Save Settings
+            SaveSettingsData();
             
 
 
 
-            Monitor_Application.Properties.Settings.Default.Save();
+            
 
         }
 
-        private void pollingRate_ValueChanged(object sender, EventArgs e)
+        private void addProgramButton_Click(object sender, EventArgs e)
         {
-            if (pollingRate.Value <= 0)
-                pollingRate.Value = 1;
+            // Display a dialog to locate the executable
+            findProgramDialog.ShowDialog();
 
-            pollingTimer.Interval = (int)pollingRate.Value;
+            // Ensure this isn't a duplicate
+
+
+            // Create a new configuration object
+
+
+
+
         }
+
+        private void findProgramDialog_FileOk(object sender, CancelEventArgs e)
+        {
+            // Create a new program object.
+
+
+            // Add the default settings for the object.
+
+            // Save settings data.
+
+
+        }
+
     }
 }

@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainDialog));
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.statusPage = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.saveButton = new System.Windows.Forms.Button();
@@ -42,20 +42,15 @@
             this.lastSessionIconBox = new System.Windows.Forms.PictureBox();
             this.optionsPage = new System.Windows.Forms.TabPage();
             this.genericGroupBox = new System.Windows.Forms.GroupBox();
-            this.pollOnStartup = new System.Windows.Forms.CheckBox();
             this.minimizeToTrayBox = new System.Windows.Forms.CheckBox();
             this.runOnStartupCheckBox = new System.Windows.Forms.CheckBox();
-            this.pollingGroupBox = new System.Windows.Forms.GroupBox();
-            this.enablePollingCheckbox = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.pollingRate = new System.Windows.Forms.NumericUpDown();
-            this.gamesPage = new System.Windows.Forms.TabPage();
+            this.programsPage = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.gameIconBox = new System.Windows.Forms.PictureBox();
-            this.removeGameButton = new System.Windows.Forms.Button();
-            this.addGameButton = new System.Windows.Forms.Button();
-            this.gameComboBox1 = new System.Windows.Forms.ComboBox();
+            this.removeProgramButton = new System.Windows.Forms.Button();
+            this.addProgramButton = new System.Windows.Forms.Button();
+            this.programComboBox = new System.Windows.Forms.ComboBox();
             this.pluginPage = new System.Windows.Forms.TabPage();
             this.label2 = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
@@ -67,17 +62,15 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.pollingTimer = new System.Windows.Forms.Timer(this.components);
-            this.tabControl1.SuspendLayout();
+            this.findProgramDialog = new System.Windows.Forms.OpenFileDialog();
+            this.tabControl.SuspendLayout();
             this.statusPage.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lastSessionIconBox)).BeginInit();
             this.optionsPage.SuspendLayout();
             this.genericGroupBox.SuspendLayout();
-            this.pollingGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pollingRate)).BeginInit();
-            this.gamesPage.SuspendLayout();
+            this.programsPage.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gameIconBox)).BeginInit();
             this.pluginPage.SuspendLayout();
@@ -85,22 +78,22 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tabControl
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.statusPage);
-            this.tabControl1.Controls.Add(this.optionsPage);
-            this.tabControl1.Controls.Add(this.gamesPage);
-            this.tabControl1.Controls.Add(this.pluginPage);
-            this.tabControl1.Controls.Add(this.helpPage);
-            this.tabControl1.Controls.Add(this.aboutPage);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(311, 238);
-            this.tabControl1.TabIndex = 0;
+            this.tabControl.Controls.Add(this.statusPage);
+            this.tabControl.Controls.Add(this.optionsPage);
+            this.tabControl.Controls.Add(this.programsPage);
+            this.tabControl.Controls.Add(this.pluginPage);
+            this.tabControl.Controls.Add(this.helpPage);
+            this.tabControl.Controls.Add(this.aboutPage);
+            this.tabControl.Location = new System.Drawing.Point(12, 12);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(311, 238);
+            this.tabControl.TabIndex = 0;
             // 
             // statusPage
             // 
@@ -194,7 +187,6 @@
             // optionsPage
             // 
             this.optionsPage.Controls.Add(this.genericGroupBox);
-            this.optionsPage.Controls.Add(this.pollingGroupBox);
             this.optionsPage.Location = new System.Drawing.Point(4, 22);
             this.optionsPage.Name = "optionsPage";
             this.optionsPage.Padding = new System.Windows.Forms.Padding(3);
@@ -205,30 +197,19 @@
             // 
             // genericGroupBox
             // 
-            this.genericGroupBox.Controls.Add(this.pollOnStartup);
             this.genericGroupBox.Controls.Add(this.minimizeToTrayBox);
             this.genericGroupBox.Controls.Add(this.runOnStartupCheckBox);
-            this.genericGroupBox.Location = new System.Drawing.Point(159, 6);
+            this.genericGroupBox.Location = new System.Drawing.Point(6, 6);
             this.genericGroupBox.Name = "genericGroupBox";
-            this.genericGroupBox.Size = new System.Drawing.Size(138, 91);
+            this.genericGroupBox.Size = new System.Drawing.Size(291, 50);
             this.genericGroupBox.TabIndex = 6;
             this.genericGroupBox.TabStop = false;
             this.genericGroupBox.Text = "Generic Options";
             // 
-            // pollOnStartup
-            // 
-            this.pollOnStartup.AutoSize = true;
-            this.pollOnStartup.Location = new System.Drawing.Point(5, 65);
-            this.pollOnStartup.Name = "pollOnStartup";
-            this.pollOnStartup.Size = new System.Drawing.Size(134, 17);
-            this.pollOnStartup.TabIndex = 2;
-            this.pollOnStartup.Text = "Poll on program startup";
-            this.pollOnStartup.UseVisualStyleBackColor = true;
-            // 
             // minimizeToTrayBox
             // 
             this.minimizeToTrayBox.AutoSize = true;
-            this.minimizeToTrayBox.Location = new System.Drawing.Point(5, 42);
+            this.minimizeToTrayBox.Location = new System.Drawing.Point(187, 19);
             this.minimizeToTrayBox.Name = "minimizeToTrayBox";
             this.minimizeToTrayBox.Size = new System.Drawing.Size(98, 17);
             this.minimizeToTrayBox.TabIndex = 1;
@@ -245,73 +226,18 @@
             this.runOnStartupCheckBox.Text = "Run on startup";
             this.runOnStartupCheckBox.UseVisualStyleBackColor = true;
             // 
-            // pollingGroupBox
+            // programsPage
             // 
-            this.pollingGroupBox.Controls.Add(this.enablePollingCheckbox);
-            this.pollingGroupBox.Controls.Add(this.label1);
-            this.pollingGroupBox.Controls.Add(this.pollingRate);
-            this.pollingGroupBox.Location = new System.Drawing.Point(6, 6);
-            this.pollingGroupBox.Name = "pollingGroupBox";
-            this.pollingGroupBox.Size = new System.Drawing.Size(147, 91);
-            this.pollingGroupBox.TabIndex = 5;
-            this.pollingGroupBox.TabStop = false;
-            this.pollingGroupBox.Text = "Polling";
-            // 
-            // enablePollingCheckbox
-            // 
-            this.enablePollingCheckbox.AutoSize = true;
-            this.enablePollingCheckbox.Location = new System.Drawing.Point(6, 19);
-            this.enablePollingCheckbox.Name = "enablePollingCheckbox";
-            this.enablePollingCheckbox.Size = new System.Drawing.Size(59, 17);
-            this.enablePollingCheckbox.TabIndex = 5;
-            this.enablePollingCheckbox.Text = "Enable";
-            this.enablePollingCheckbox.UseVisualStyleBackColor = true;
-            this.enablePollingCheckbox.CheckedChanged += new System.EventHandler(this.enablePollingCheckbox_CheckedChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 39);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(54, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Rate (mS)";
-            // 
-            // pollingRate
-            // 
-            this.pollingRate.Location = new System.Drawing.Point(63, 37);
-            this.pollingRate.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.pollingRate.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.pollingRate.Name = "pollingRate";
-            this.pollingRate.Size = new System.Drawing.Size(64, 20);
-            this.pollingRate.TabIndex = 2;
-            this.pollingRate.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.pollingRate.ValueChanged += new System.EventHandler(this.pollingRate_ValueChanged);
-            // 
-            // gamesPage
-            // 
-            this.gamesPage.Controls.Add(this.groupBox1);
-            this.gamesPage.Controls.Add(this.removeGameButton);
-            this.gamesPage.Controls.Add(this.addGameButton);
-            this.gamesPage.Controls.Add(this.gameComboBox1);
-            this.gamesPage.Location = new System.Drawing.Point(4, 22);
-            this.gamesPage.Name = "gamesPage";
-            this.gamesPage.Size = new System.Drawing.Size(303, 212);
-            this.gamesPage.TabIndex = 5;
-            this.gamesPage.Text = "Games";
-            this.gamesPage.UseVisualStyleBackColor = true;
+            this.programsPage.Controls.Add(this.groupBox1);
+            this.programsPage.Controls.Add(this.removeProgramButton);
+            this.programsPage.Controls.Add(this.addProgramButton);
+            this.programsPage.Controls.Add(this.programComboBox);
+            this.programsPage.Location = new System.Drawing.Point(4, 22);
+            this.programsPage.Name = "programsPage";
+            this.programsPage.Size = new System.Drawing.Size(303, 212);
+            this.programsPage.TabIndex = 5;
+            this.programsPage.Text = "Programs";
+            this.programsPage.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -322,7 +248,7 @@
             this.groupBox1.Size = new System.Drawing.Size(296, 152);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Game Settings";
+            this.groupBox1.Text = "Program Settings";
             // 
             // checkedListBox1
             // 
@@ -343,31 +269,32 @@
             this.gameIconBox.TabIndex = 0;
             this.gameIconBox.TabStop = false;
             // 
-            // removeGameButton
+            // removeProgramButton
             // 
-            this.removeGameButton.Location = new System.Drawing.Point(154, 30);
-            this.removeGameButton.Name = "removeGameButton";
-            this.removeGameButton.Size = new System.Drawing.Size(141, 23);
-            this.removeGameButton.TabIndex = 2;
-            this.removeGameButton.Text = "Remove Game";
-            this.removeGameButton.UseVisualStyleBackColor = true;
+            this.removeProgramButton.Location = new System.Drawing.Point(154, 30);
+            this.removeProgramButton.Name = "removeProgramButton";
+            this.removeProgramButton.Size = new System.Drawing.Size(141, 23);
+            this.removeProgramButton.TabIndex = 2;
+            this.removeProgramButton.Text = "Remove Program";
+            this.removeProgramButton.UseVisualStyleBackColor = true;
             // 
-            // addGameButton
+            // addProgramButton
             // 
-            this.addGameButton.Location = new System.Drawing.Point(7, 30);
-            this.addGameButton.Name = "addGameButton";
-            this.addGameButton.Size = new System.Drawing.Size(141, 23);
-            this.addGameButton.TabIndex = 1;
-            this.addGameButton.Text = "Add New Game...";
-            this.addGameButton.UseVisualStyleBackColor = true;
+            this.addProgramButton.Location = new System.Drawing.Point(7, 30);
+            this.addProgramButton.Name = "addProgramButton";
+            this.addProgramButton.Size = new System.Drawing.Size(141, 23);
+            this.addProgramButton.TabIndex = 1;
+            this.addProgramButton.Text = "Add New Program...";
+            this.addProgramButton.UseVisualStyleBackColor = true;
+            this.addProgramButton.Click += new System.EventHandler(this.addProgramButton_Click);
             // 
-            // gameComboBox1
+            // programComboBox
             // 
-            this.gameComboBox1.FormattingEnabled = true;
-            this.gameComboBox1.Location = new System.Drawing.Point(3, 3);
-            this.gameComboBox1.Name = "gameComboBox1";
-            this.gameComboBox1.Size = new System.Drawing.Size(297, 21);
-            this.gameComboBox1.TabIndex = 0;
+            this.programComboBox.FormattingEnabled = true;
+            this.programComboBox.Location = new System.Drawing.Point(3, 3);
+            this.programComboBox.Name = "programComboBox";
+            this.programComboBox.Size = new System.Drawing.Size(297, 21);
+            this.programComboBox.TabIndex = 0;
             // 
             // pluginPage
             // 
@@ -464,16 +391,20 @@
             this.notifyIcon.Text = "SimpitX";
             this.notifyIcon.Visible = true;
             // 
-            // pollingTimer
+            // findProgramDialog
             // 
-            this.pollingTimer.Tick += new System.EventHandler(this.pollingTimer_Tick);
+            this.findProgramDialog.DefaultExt = "exe";
+            this.findProgramDialog.Filter = "Executable Files|*.exe";
+            this.findProgramDialog.InitialDirectory = "C:\\";
+            this.findProgramDialog.RestoreDirectory = true;
+            this.findProgramDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.findProgramDialog_FileOk);
             // 
             // MainDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(335, 262);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(351, 300);
@@ -481,7 +412,7 @@
             this.Text = "SimpitX";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainDialog_FormClosing);
             this.Load += new System.EventHandler(this.MainDialog_Load);
-            this.tabControl1.ResumeLayout(false);
+            this.tabControl.ResumeLayout(false);
             this.statusPage.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
@@ -490,10 +421,7 @@
             this.optionsPage.ResumeLayout(false);
             this.genericGroupBox.ResumeLayout(false);
             this.genericGroupBox.PerformLayout();
-            this.pollingGroupBox.ResumeLayout(false);
-            this.pollingGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pollingRate)).EndInit();
-            this.gamesPage.ResumeLayout(false);
+            this.programsPage.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gameIconBox)).EndInit();
             this.pluginPage.ResumeLayout(false);
@@ -506,21 +434,19 @@
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage statusPage;
         private System.Windows.Forms.TabPage optionsPage;
-        private System.Windows.Forms.TabPage gamesPage;
+        private System.Windows.Forms.TabPage programsPage;
         private System.Windows.Forms.TabPage pluginPage;
         private System.Windows.Forms.TabPage helpPage;
         private System.Windows.Forms.TabPage aboutPage;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button removeGameButton;
-        private System.Windows.Forms.Button addGameButton;
-        private System.Windows.Forms.ComboBox gameComboBox1;
+        private System.Windows.Forms.Button removeProgramButton;
+        private System.Windows.Forms.Button addProgramButton;
+        private System.Windows.Forms.ComboBox programComboBox;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown pollingRate;
         private System.Windows.Forms.CheckBox minimizeToTrayBox;
         private System.Windows.Forms.CheckBox runOnStartupCheckBox;
         private System.Windows.Forms.Button button3;
@@ -529,8 +455,6 @@
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.GroupBox genericGroupBox;
-        private System.Windows.Forms.GroupBox pollingGroupBox;
-        private System.Windows.Forms.CheckBox enablePollingCheckbox;
         private System.Windows.Forms.PictureBox gameIconBox;
         private System.Windows.Forms.CheckedListBox checkedListBox1;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -541,9 +465,8 @@
         private System.Windows.Forms.Label lastSessionErrors;
         private System.Windows.Forms.Label lastSessionTime;
         private System.Windows.Forms.Button saveButton;
-        private System.Windows.Forms.CheckBox pollOnStartup;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.Timer pollingTimer;
+        private System.Windows.Forms.OpenFileDialog findProgramDialog;
     }
 }
 
