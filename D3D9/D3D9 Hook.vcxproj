@@ -315,6 +315,11 @@
     <ClInclude Include="d3d9int.h" />
     <ClInclude Include="d3d9tex.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="d3d9hook.plugin.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

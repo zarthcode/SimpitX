@@ -60,4 +60,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="d3d9hook.plugin.xml" />
+  </ItemGroup>
 </Project>

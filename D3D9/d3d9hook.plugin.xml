@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SimpitX Version="1.0">
+	<Plugin Name="D3D9 Hook" Author="ZarthCode LLC" Version="1.0" Date="4/30/2012">
+		<Description>Provides a Direct3d 9 hook</Description>
+		<!-- Library files list the dlls required for this module. -->
+		<Library File="D3D9Hook_Win32.dll" Arch="x86" MD5="0123456789ABCDEF" Action="Inject" />
+		<Library File="D3D9Hook_x64.dll" Arch="x64" MD5="0123456789ABCDEF" Action="Inject" />
+		<!-- Plugins listed as dependencies are loaded as a prerequesite to this plugin. -->
+		<Dependencies>
+			<Dependency Name="Dummy Dependency"/>
+		</Dependencies>
+		<!-- The signature element contains a hash that verifies this config file's authenticity-->
+	</Plugin>
+</SimpitX>
