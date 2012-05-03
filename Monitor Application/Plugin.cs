@@ -6,6 +6,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Security.Cryptography;
+using EasyHook;
 
 namespace Monitor_Application
 {
@@ -75,7 +76,9 @@ namespace Monitor_Application
 			
 			try
 			{
+
 				LoadPluginConfig();
+				ValidatePluginConfig();
 			}
 			catch (System.Exception ex)
 			{
@@ -90,9 +93,26 @@ namespace Monitor_Application
 		public bool ValidatePluginConfig()
 		{
 
-			// Open the XML file.
+			// Determine the required action.
+			if (Libraries.Count == 0)
+			{
+				throw new Exception("No libraries configured for '" + this.Name + "' plugin!");
+			}
 
-			// Open the schema
+			ActionType startAction = Libraries[0].Action;
+
+			// Verify that the action is configured consistently.
+			if (Libraries.Count > 1)
+			{
+
+				foreach (LibraryExecutable le in Libraries)
+				{
+					if (le.Action != startAction)
+					{
+						throw new Exception("Library action mismatch in plugin " + this.Name);
+					}
+				}
+			}
 
 			return false;
 		}
@@ -104,7 +124,8 @@ namespace Monitor_Application
 		{
 
 			Console.WriteLine("Plugin configuration read initiated.");
-			// Validate the plugin xml.
+			
+			// Validate the plugin xml against schema.
 
 
 			// Open the xml file.
@@ -206,6 +227,19 @@ namespace Monitor_Application
 							LibraryExecutable tempLibrary;
 							tempLibrary = new LibraryExecutable();
 							tempLibrary.FileName = Node.Attributes["File"].Value;
+							{
+								// Ensure that the file exists.
+								FileInfo[] libraryFile = baseDirectory.GetFiles(tempLibrary.FileName);
+
+								if ((libraryFile.Count() != 1) || (libraryFile[0].Exists == false))
+								{
+									throw new Exception("Required library file '" + tempLibrary.FileName + "'for " + this.Name + " is missing.");
+								}
+
+								// Convert to full path.
+								tempLibrary.FileName = libraryFile[0].FullName;
+
+							}
 							String archStr;
 							try
 							{
@@ -230,7 +264,7 @@ namespace Monitor_Application
 									break;
 								default:
 									throw new Exception("Unrecognized Library 'Type' specified in plugin configuration.");
-									
+
 							}
 
 
@@ -261,12 +295,17 @@ namespace Monitor_Application
 									break;
 
 								case "Execute":
-									tempLibrary.Action = ActionType.Run; 
+									tempLibrary.Action = ActionType.Run;
 									break;
 								default:
 									throw new Exception("Invalid Library action specified: " + actionStr);
 							}
 							Libraries.Add(tempLibrary);
+							if (Libraries.Count > 2)
+							{
+								throw new Exception("Invalid Library configuration (there cannot be more than two!)");
+							}
+
 						}
 						break;
 					case "Dependencies":
@@ -299,22 +338,51 @@ namespace Monitor_Application
 		}
 
 		/// <summary>
-		/// Starts the plugin by performing it's action on the specified target.
-		/// Additionally, all dependencies are checked.
+		/// Returns the x64 library file.
 		/// </summary>
-		public void Start()
+		public String GetLibraryx64()
 		{
-			// Make sure all dependencies are running/available.
-			Console.WriteLine("Plugin.Start() called on " + this.Name);
+
+			foreach (LibraryExecutable lib in Libraries)
+			{
+				if (lib.Arch == Architecture.x64 || lib.Arch == Architecture.CLR)
+				{
+					return lib.FileName;
+				}
+			}
+
+			// None found.
+			return "";
+
 		}
 
-		public void Stop()
+		/// <summary>
+		/// Returns the x86 library file.
+		/// </summary>
+		public String GetLibraryx86()
 		{
-			// Stop this plugin.
-			Console.WriteLine("Plugin.Start() called on " + this.Name);
+
+			foreach (LibraryExecutable lib in Libraries)
+			{
+				if (lib.Arch == Architecture.x86 || lib.Arch == Architecture.CLR)
+				{
+					return lib.FileName;
+				}
+			}
+
+			// None found.
+			return "";
+
 		}
 
-
+		/// <summary>
+		/// Returns the action that should be performed using this plugin.
+		/// </summary>
+		/// <returns></returns>
+		public ActionType GetAction()
+		{
+			return Libraries[0].Action;
+		}
 
 
 	}

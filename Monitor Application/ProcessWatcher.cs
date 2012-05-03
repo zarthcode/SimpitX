@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
-using EasyHook;
 using System.ComponentModel;
 using System.Collections;
 using System.Globalization;

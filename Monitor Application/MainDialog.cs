@@ -240,12 +240,15 @@ namespace Monitor_Application
 
 			// Minimize and enter "active" mode.
 
-			// Locate the matching game settings entry
 
 			// Update session info.
 			UpdateSessionInfo(program, proc.CreationDate);
 
+			// Create program instance
+			ProgramInstance progInstance = new ProgramInstance(program, proc);
+
 			// Activate plugins.
+			progInstance.Start();
 
 
 
@@ -257,16 +260,26 @@ namespace Monitor_Application
 			// Output some console info.
 			Console.WriteLine("Process deleted for program:" + program.SettingsDictionary["Info"]["Program Name"]);
 			
+			// Restore window settings.
 
-			// Minimize and enter "active" mode.
+			// Locate the matching entry
+			if (ProgramInstance.runningProgramInstances.ContainsKey(proc.ProcessId))
+			{
+				// Kill off any non-injected processes.
+				ProgramInstance.runningProgramInstances[proc.ProcessId].Abort();
 
-			// Locate the matching game settings entry
+				// Update session info.
+				InvokeControlAction<Label>
+					(lastSessionErrors, lse => lse.Text = program["Info", "Program Name"] + " closed.");
+			}
+			else
+			{
 
-			// Update session info.
-			InvokeControlAction<Label>
-				(lastSessionErrors, lse => lse.Text = "Program has been closed.");
+				// Update session info.
+				InvokeControlAction<Label>
+					(lastSessionErrors, lse => lse.Text = program["Info","Program Name"] + " closed, no startup detected.");
+			}
 
-			// Inject applicable plugins.
 
 
 
