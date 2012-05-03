@@ -15,6 +15,24 @@ namespace Monitor_Application
 {
 	public partial class MainDialog : Form
 	{
+		/// <summary>
+		/// Generic cross-thread access control
+		/// </summary>
+		/// <typeparam name="t"></typeparam>
+		/// <param name="cont"></param>
+		/// <param name="action"></param>
+		public static void InvokeControlAction<t>(t cont, Action<t> action) where t : Control
+		{
+			if (cont.InvokeRequired)
+			{
+				cont.Invoke(new Action<t, Action<t>>(InvokeControlAction),
+						  new object[] { cont, action });
+			}
+			else
+			{ action(cont); }
+		}
+
+
 		public MainDialog()
 		{
 			InitializeComponent();
@@ -189,7 +207,7 @@ namespace Monitor_Application
 			
 			foreach( KeyValuePair<String, ProgramConfiguration> progconfig in ConfiguredPrograms)
 			{
-				progconfig.Value.Initialize(ProcessCreatedEventHandler, ProcessDeletedEventHandler, ProcessModifiedEventHandler);
+				progconfig.Value.Initialize(ProcessCreatedEventHandler, ProcessDeletedEventHandler);
 			}
 
 		}
@@ -245,7 +263,8 @@ namespace Monitor_Application
 			// Locate the matching game settings entry
 
 			// Update session info.
-			lastSessionErrors.Text = "Program has been closed.";
+			InvokeControlAction<Label>
+				(lastSessionErrors, lse => lse.Text = "Program has been closed.");
 
 			// Inject applicable plugins.
 
@@ -266,23 +285,35 @@ namespace Monitor_Application
 
 		public void UpdateSessionInfo(ProgramConfiguration program, DateTime startTime)
 		{
+			
 			// Update the icon
 			if (program.GetIcon() != null)
 			{
-				lastSessionIconBox.Image = program.GetIcon().ToBitmap();
+				InvokeControlAction<PictureBox>
+					(lastSessionIconBox, lsib => lsib.Image = program.GetIcon().ToBitmap());
 			}
 
+			// Switch to status tab
+			InvokeControlAction<TabControl>
+				(tabControl, tabctrl => tabctrl.SelectedIndex = 0);
+
 			// Program name
-			lastSessionName.Text = program.SettingsDictionary["Info"]["Program Name"];
+			InvokeControlAction<Label>
+				(lastSessionName, lsn => lsn.Text = program.SettingsDictionary["Info"]["Program Name"]);
 
 			// Session Time
-			lastSessionTime.Text = startTime.ToShortTimeString();
-
+			InvokeControlAction<Label>
+				(lastSessionTime, lst => lst.Text = startTime.ToShortTimeString());
+			
 			// Clear Errors encountered
-			lastSessionErrors.Text = "Program Startup Detected.";
+			InvokeControlAction<Label>
+				(lastSessionErrors, lse => lse.Text = "Program Startup Detected.");
 
 			// Clear log
-			logListBox.Items.Clear();
+			InvokeControlAction<ListBox>
+				(logListBox, llb => llb.Items.Clear());
+			
+			
 
 		}
 
@@ -688,7 +719,7 @@ namespace Monitor_Application
 					// Make sure the dependency is available.
 					if (!Plugin.LoadedPlugins.ContainsKey(dependency))
 					{
-						MessageBox.Show("Required plugin not found:\n" + dependency + "\n(Check your settings, some may have been changed.)", "Cannot Enable Plugin" );
+						MessageBox.Show("Required plugin not found:\n" + dependency + "\n(Check your settings, some may have been changed.)", "Cannot Enable Plugin", MessageBoxButtons.OK, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly );
 						// Cancel the attempt.
 						e.NewValue = e.CurrentValue;
 						return;
@@ -702,9 +733,6 @@ namespace Monitor_Application
 					enabledPluginListBox.SetItemChecked(dependencyIndex, true);
 				}
 
-				// Add/update program configuration
-				currentProgram["Plugins", selectedPlugin.Name] = Convert.ToString(true);
-				
 			}
 			// If disabling
 			if ((e.NewValue == CheckState.Unchecked) && (e.CurrentValue == CheckState.Checked))
@@ -715,12 +743,17 @@ namespace Monitor_Application
 				// Determine if another (enabled) plugin depends on this one.
 				foreach (Plugin itPlugin in Plugin.LoadedPlugins.Values)
 				{
+					if (itPlugin.Name == selectedPlugin.Name)
+					{
+						// Skip this plugin.
+						continue;
+					}
 					foreach (String dependency in itPlugin.Dependencies)
 					{
-						if ((dependency == selectedPlugin.Name) && Convert.ToBoolean(currentProgram["Plugins", itPlugin.Name, Convert.ToString(false)]))
+						if ((dependency == selectedPlugin.Name) && (Convert.ToBoolean(currentProgram["Plugins", itPlugin.Name, Convert.ToString(false)]) == true))
 						{
 							
-							// Dependency located.
+							// Enabled, dependent plugin located.
 							foundDependents.Add(itPlugin.Name);
 							
 						}
@@ -740,7 +773,32 @@ namespace Monitor_Application
 					// Cancel
 					e.NewValue = e.CurrentValue;
 				}
+
+
 			}
+		
+			// Add/update program configuration
+			bool setState = false;
+			switch (e.NewValue)
+			{
+				case CheckState.Checked:
+					setState = true;
+					break;
+
+				case CheckState.Unchecked:
+					setState = false;
+					break;
+
+				case CheckState.Indeterminate:
+					// No change
+					return;
+
+				default:
+					throw new Exception("Invalid plugin checkstate");
+	
+			}
+
+			currentProgram["Plugins", selectedPlugin.Name] = Convert.ToString(setState);
 		}
 
 		private void MainDialog_Resize(object sender, EventArgs e)
@@ -775,6 +833,10 @@ namespace Monitor_Application
 				{
 					notifyIcon.Visible = false;
 				}
+			}
+			else
+			{
+				this.Activate();
 			}
 		}
 

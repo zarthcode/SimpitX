@@ -115,7 +115,7 @@ namespace Monitor_Application
 		/// <summary>
 		/// Creates the process watcher and begins listening
 		/// </summary>
-		public void Initialize(ProcessEventHandler createHandler, ProcessEventHandler deletedHandler, ProcessEventHandler modifyHandler)
+		public void Initialize(ProcessEventHandler createHandler, ProcessEventHandler deletedHandler)
 		{
 
 			if (procWatcher == null)
@@ -128,7 +128,7 @@ namespace Monitor_Application
 				// Add event handlers
 				procWatcher.ProcessCreated += createHandler;
 				procWatcher.ProcessDeleted += deletedHandler;
-				procWatcher.ProcessModified += modifyHandler;
+				// procWatcher.ProcessModified += modifyHandler;
 
 				// Start monitoring
 				try

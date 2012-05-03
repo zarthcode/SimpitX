@@ -352,6 +352,7 @@
 			this.enabledPluginListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.enabledPluginListBox.CheckOnClick = true;
 			this.enabledPluginListBox.FormattingEnabled = true;
 			this.enabledPluginListBox.Location = new System.Drawing.Point(6, 19);
 			this.enabledPluginListBox.Name = "enabledPluginListBox";
