@@ -25,7 +25,7 @@ namespace Monitor_Application.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool MinimizeToTray {
             get {
                 return ((bool)(this["MinimizeToTray"]));
@@ -37,31 +37,7 @@ namespace Monitor_Application.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool PollOnStartup {
-            get {
-                return ((bool)(this["PollOnStartup"]));
-            }
-            set {
-                this["PollOnStartup"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
-        public decimal PollingRate {
-            get {
-                return ((decimal)(this["PollingRate"]));
-            }
-            set {
-                this["PollingRate"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("No Previous Session")]
+        [global::System.Configuration.DefaultSettingValueAttribute("No previous session")]
         public string lastSessionGame {
             get {
                 return ((string)(this["lastSessionGame"]));
@@ -73,7 +49,7 @@ namespace Monitor_Application.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("N/A")]
         public string lastSessionTime {
             get {
                 return ((string)(this["lastSessionTime"]));
@@ -85,7 +61,7 @@ namespace Monitor_Application.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("N/A")]
         public string lastSessionErrors {
             get {
                 return ((string)(this["lastSessionErrors"]));
@@ -109,7 +85,7 @@ namespace Monitor_Application.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool runOnStartup {
             get {
                 return ((bool)(this["runOnStartup"]));
@@ -181,7 +157,7 @@ namespace Monitor_Application.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100, 100")]
         public global::System.Drawing.Point WndLoc {
             get {
                 return ((global::System.Drawing.Point)(this["WndLoc"]));

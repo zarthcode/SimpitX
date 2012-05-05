@@ -3,28 +3,22 @@
   <Profiles />
   <Settings>
     <Setting Name="MinimizeToTray" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="PollOnStartup" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="PollingRate" Type="System.Decimal" Scope="User">
-      <Value Profile="(Default)">50</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="lastSessionGame" Type="System.String" Scope="User">
-      <Value Profile="(Default)">No Previous Session</Value>
+      <Value Profile="(Default)">No previous session</Value>
     </Setting>
     <Setting Name="lastSessionTime" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">N/A</Value>
     </Setting>
     <Setting Name="lastSessionErrors" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">N/A</Value>
     </Setting>
     <Setting Name="pluginSettings" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="runOnStartup" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="DefaultGameSettings" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -42,7 +36,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="WndLoc" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
+      <Value Profile="(Default)">100, 100</Value>
     </Setting>
     <Setting Name="WndSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">0, 0</Value>

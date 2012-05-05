@@ -86,6 +86,7 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Libraries\MinHook\Include;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Libraries\MinHook\Lib\x64;$(LibraryPath)</LibraryPath>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D3D9Hook_$(Platform)</TargetName>
+    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -233,6 +234,19 @@
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
+    <Manifest>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+    </Manifest>
+    <PostBuildEvent>
+      <Command>copy "$(ProjectDir)*.xml" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying plugin config file</Message>
+    </PostBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="d3d9.cpp">

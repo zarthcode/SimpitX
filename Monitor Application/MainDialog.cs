@@ -49,7 +49,17 @@ namespace Monitor_Application
 		private void MainDialog_Load(object sender, EventArgs e)
 		{
 			// Load values from settings.
-			LoadSettingsData();
+
+
+			try
+			{
+				LoadSettingsData();
+			}
+			catch (System.Exception ex)
+			{
+				Console.WriteLine("Exception thrown during LoadSettingsData(): \n" + ex.Message);
+				throw ex;
+			}
 
 			// Override window state.
 			if (startMinimizedCheckBox.Checked)
@@ -58,7 +68,15 @@ namespace Monitor_Application
 			}
 
 			// Load Plugins
-			LoadPlugins();
+			try
+			{
+				LoadPlugins();
+			}
+			catch (System.Exception ex)
+			{
+				Console.WriteLine("Exception thrown during LoadPlugins(): \n" + ex.Message);
+				throw ex;
+			}
 
 			// UpdateUI
 			UpdateProgramComboList();
@@ -95,7 +113,10 @@ namespace Monitor_Application
 			// this.WindowState = Properties.Settings.Default.WndState;
 	
 			// Deserialize the list of strings
+			
 			List<String> StringList;
+
+			if (Monitor_Application.Properties.Settings.Default.ProgramConfigurationXML.Length != 0)
 			{
 
 				XmlSerializer serializer = new XmlSerializer(typeof(List<String>));
@@ -105,11 +126,12 @@ namespace Monitor_Application
 
 				
 			}
-
-			if (StringList == null)
+			else
 			{
 				StringList = new List<String>();
 			}
+
+
 			// Deserialize configured programs
 			foreach (String progConfigXML in StringList)
 			{
@@ -343,7 +365,7 @@ namespace Monitor_Application
 			FileInfo programFile = new FileInfo(programFileStr);
 			DirectoryInfo pluginDirectory = new DirectoryInfo(programFile.DirectoryName);
 
-			foreach (DirectoryInfo directory in pluginDirectory.EnumerateDirectories())
+			foreach (DirectoryInfo directory in pluginDirectory.GetDirectories())
 				if (directory.Name == "plugins")
 				{
 					pluginDirectory = directory;
@@ -352,7 +374,7 @@ namespace Monitor_Application
 
 
 			// Iterate on each plugin's subdirectory.
-			foreach (DirectoryInfo directory in pluginDirectory.EnumerateDirectories())
+			foreach (DirectoryInfo directory in pluginDirectory.GetDirectories())
 			{
 
 				// Search for "plugin.simpitx.xml"

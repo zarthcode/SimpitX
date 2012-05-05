@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using EasyHook;
 namespace Monitor_Application
 {
 	public class ProgramInstance
@@ -35,7 +35,16 @@ namespace Monitor_Application
 				// Perform the plugin's action.
 				if (plugin.GetAction() == Plugin.ActionType.Inject)
 				{
-					
+					Console.WriteLine("Injecting " + plugin.Name);
+					try
+					{
+						RemoteHooking.Inject((int)processInformation.ProcessId, InjectionOptions.DoNotRequireStrongName, plugin.GetLibraryx86(), plugin.GetLibraryx64(), null);
+					}
+					catch (System.Exception ex)
+					{
+						Console.WriteLine("Remote injection attempt failed: " + ex.Message);
+						throw ex;
+					}
 				}
 				else
 				{
