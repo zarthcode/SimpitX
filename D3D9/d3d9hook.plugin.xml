@@ -6,7 +6,7 @@
 		<Library File="D3D9Hook_Win32.dll" Arch="x86" MD5="0123456789ABCDEF" Action="Inject" />
 		<Library File="D3D9Hook_x64.dll" Arch="x64" MD5="0123456789ABCDEF" Action="Inject" />
 		<!-- Plugins listed as dependencies are loaded as a prerequesite to this plugin. -->
-		<!--
+		<!-- D3D9Hook_x64.dll
 		<Dependencies>
 			<Dependency Name="Dummy Dependency"/>
 		</Dependencies>

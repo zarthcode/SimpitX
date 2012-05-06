@@ -38,7 +38,13 @@ namespace Monitor_Application
 					Console.WriteLine("Injecting " + plugin.Name);
 					try
 					{
-						RemoteHooking.Inject((int)processInformation.ProcessId, InjectionOptions.DoNotRequireStrongName, plugin.GetLibraryx86(), plugin.GetLibraryx64(), null);
+						Console.WriteLine("Calling \n\t NativeAPI.RhInjectLibrary(" +
+							(int)processInformation.ProcessId + ", 0, 0, " +
+							plugin.GetLibraryx86() + ", " +
+							plugin.GetLibraryx64() + ", " +
+							IntPtr.Zero + ", 0);");
+						// RemoteHooking.Inject((int)processInformation.ProcessId, InjectionOptions.DoNotRequireStrongName, plugin.GetLibraryx86(), plugin.GetLibraryx64(), null);
+						NativeAPI.RhInjectLibrary((int)processInformation.ProcessId, 0, NativeAPI.EASYHOOK_INJECT_DEFAULT, plugin.GetLibraryx86(), plugin.GetLibraryx64(), IntPtr.Zero, 0);
 					}
 					catch (System.Exception ex)
 					{

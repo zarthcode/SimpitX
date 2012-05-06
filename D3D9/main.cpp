@@ -101,6 +101,13 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 	return false;
 }
 
+EXTERN_DLL_EXPORT void __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO* InRemoteInfo)
+{
+
+	
+}
+
+
 char *GetDirectoryFile(char *filename)
 {
 	static char path[320];

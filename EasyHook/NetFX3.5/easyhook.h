@@ -1,24 +1,24 @@
 /*
-    EasyHook - The reinvention of Windows API hooking
+	EasyHook - The reinvention of Windows API hooking
  
-    Copyright (C) 2009 Christoph Husse
+	Copyright (C) 2009 Christoph Husse
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-    Please visit http://www.codeplex.com/easyhook for more information
-    about the project and latest updates.
+	Please visit http://www.codeplex.com/easyhook for more information
+	about the project and latest updates.
 */
 
 #ifndef _EASYHOOK_H_
@@ -26,21 +26,21 @@
 
 #ifdef DRIVER
 
-    #include <ntddk.h>
-    #include <ntstrsafe.h>
+	#include <ntddk.h>
+	#include <ntstrsafe.h>
 
 	typedef int BOOL;
 	typedef void* HMODULE;
 
 #else
 
-    #define NTDDI_VERSION           NTDDI_WIN2KSP4
-    #define _WIN32_WINNT            0x500
-    #define _WIN32_IE_              _WIN32_IE_WIN2KSP4
+	#define NTDDI_VERSION           NTDDI_WIN2KSP4
+	#define _WIN32_WINNT            0x500
+	#define _WIN32_IE_              _WIN32_IE_WIN2KSP4
 
-    #include <windows.h>
-    #include <winnt.h>
-    #include <winternl.h>
+	#include <windows.h>
+	#include <winnt.h>
+	#include <winternl.h>
 
 #endif
 
@@ -50,23 +50,23 @@ extern "C"{
 #endif
 
 #ifdef EASYHOOK_EXPORTS
-    #define EASYHOOK_API						__declspec(dllexport) __stdcall
+	#define EASYHOOK_API						__declspec(dllexport) __stdcall
 	#define DRIVER_SHARED_API(type, decl)		EXTERN_C type EASYHOOK_API decl
 #else
-    #ifndef DRIVER
-        #define EASYHOOK_API					__declspec(dllimport) __stdcall
+	#ifndef DRIVER
+		#define EASYHOOK_API					__declspec(dllimport) __stdcall
 		#define DRIVER_SHARED_API(type, decl)	EXTERN_C type EASYHOOK_API decl
-    #else
-        #define EASYHOOK_API					__stdcall
+	#else
+		#define EASYHOOK_API					__stdcall
 		#define DRIVER_SHARED_API(type, decl)	typedef type EASYHOOK_API PROC_##decl; EXTERN_C type EASYHOOK_API decl
-    #endif
+	#endif
 #endif
 
 /* 
-    This is the typical sign that a defined method is exported...
+	This is the typical sign that a defined method is exported...
 
-    Methods marked with this attribute need special attention
-    during parameter validation and documentation.
+	Methods marked with this attribute need special attention
+	during parameter validation and documentation.
 */
 #define EASYHOOK_NT_EXPORT          EXTERN_C NTSTATUS EASYHOOK_API
 #define EASYHOOK_BOOL_EXPORT        EXTERN_C BOOL EASYHOOK_API
@@ -80,7 +80,7 @@ typedef struct _LOCAL_HOOK_INFO_* PLOCAL_HOOK_INFO;
 
 typedef struct _HOOK_TRACE_INFO_
 {
-    PLOCAL_HOOK_INFO        Link;
+	PLOCAL_HOOK_INFO        Link;
 }HOOK_TRACE_INFO, *TRACED_HOOK_HANDLE;
 
 DRIVER_SHARED_API(NTSTATUS, RtlGetLastError());
@@ -88,10 +88,10 @@ DRIVER_SHARED_API(NTSTATUS, RtlGetLastError());
 DRIVER_SHARED_API(PWCHAR, RtlGetLastErrorString());
 
 DRIVER_SHARED_API(NTSTATUS, LhInstallHook(
-            void* InEntryPoint,
-            void* InHookProc,
-            void* InCallback,
-            TRACED_HOOK_HANDLE OutHandle));
+			void* InEntryPoint,
+			void* InHookProc,
+			void* InCallback,
+			TRACED_HOOK_HANDLE OutHandle));
 
 DRIVER_SHARED_API(NTSTATUS, LhUninstallAllHooks());
 
@@ -100,9 +100,9 @@ DRIVER_SHARED_API(NTSTATUS, LhUninstallHook(TRACED_HOOK_HANDLE InHandle));
 DRIVER_SHARED_API(NTSTATUS, LhWaitForPendingRemovals());
 
 /*
-    Setup the ACLs after hook installation. Please note that every
-    hook starts suspended. You will have to set a proper ACL to
-    make it active!
+	Setup the ACLs after hook installation. Please note that every
+	hook starts suspended. You will have to set a proper ACL to
+	make it active!
 */
 #ifdef DRIVER
 
@@ -157,10 +157,10 @@ DRIVER_SHARED_API(NTSTATUS, LhWaitForPendingRemovals());
 #endif // !DRIVER
 
 /*
-    The following barrier methods are meant to be used in hook handlers only!
+	The following barrier methods are meant to be used in hook handlers only!
 
-    They will all fail with STATUS_NOT_SUPPORTED if called outside a
-    valid hook handler...
+	They will all fail with STATUS_NOT_SUPPORTED if called outside a
+	valid hook handler...
 */
 DRIVER_SHARED_API(NTSTATUS, LhBarrierGetCallback(PVOID* OutValue));
 
@@ -191,15 +191,15 @@ DRIVER_SHARED_API(NTSTATUS, LhBarrierPointerToModule(
 
 DRIVER_SHARED_API(NTSTATUS, LhEnumModules(
 			HMODULE* OutModuleArray, 
-            ULONG InMaxModuleCount,
-            ULONG* OutModuleCount));
+			ULONG InMaxModuleCount,
+			ULONG* OutModuleCount));
 
 DRIVER_SHARED_API(NTSTATUS, LhBarrierGetCallingModule(MODULE_INFORMATION* OutModule));
 
 DRIVER_SHARED_API(NTSTATUS, LhBarrierCallStackTrace(
-            PVOID* OutMethodArray, 
-            ULONG InMaxMethodCount,
-            ULONG* OutMethodCount));
+			PVOID* OutMethodArray, 
+			ULONG InMaxMethodCount,
+			ULONG* OutMethodCount));
 
 #ifdef DRIVER
 
