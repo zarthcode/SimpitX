@@ -84,7 +84,7 @@ int commandline_parser(int argc, char *argv[])
 			{
 				if(!EnablePrivilegeW(L"SeDebugPrivilege", TRUE))
 				{
-					PRINT_ERROR_MSGA("Could not set SeDebugPrivilege.");
+					THROW_ERROR_MSGA("Could not set SeDebugPrivilege.");
 				}
 			}
 
@@ -106,7 +106,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
+					THROW_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
 					goto clean_up;
 				}
 
@@ -115,7 +115,7 @@ int commandline_parser(int argc, char *argv[])
 				// invalid argument
 				if(process_id == 0)
 				{
-					PRINT_ERROR_MSGA("Invalid argument (%s).", argv[argv_index + 1]);
+					THROW_ERROR_MSGA("Invalid argument (%s).", argv[argv_index + 1]);
 					goto clean_up;
 				}
 
@@ -128,7 +128,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
+					THROW_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
 					goto clean_up;
 				}
 
@@ -146,7 +146,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
+					THROW_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
 					goto clean_up;
 				}
 				
@@ -164,7 +164,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
+					THROW_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
 					goto clean_up;
 				}
 				
@@ -182,7 +182,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
+					THROW_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
 					goto clean_up;
 				}
 				
@@ -202,7 +202,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
+					THROW_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
 					goto clean_up;
 				}
 				
@@ -220,7 +220,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
+					THROW_ERROR_MSGA("Not enough arguments (%s).", argv[argv_index]);
 					goto clean_up;
 				}
 				
@@ -239,7 +239,7 @@ int commandline_parser(int argc, char *argv[])
 				// not enough arguments
 				if(argv[argv_index + 1] == 0)
 				{
-					PRINT_ERROR_MSGA("Not enough arguments (%s).",
+					THROW_ERROR_MSGA("Not enough arguments (%s).",
 						argv[argv_index]);
 					goto clean_up;
 				}
@@ -249,14 +249,14 @@ int commandline_parser(int argc, char *argv[])
 				// invalid argument
 				if(process_id == 0)
 				{
-					PRINT_ERROR_MSGA("Invalid argument (%s).",
+					THROW_ERROR_MSGA("Invalid argument (%s).",
 						argv[argv_index + 1]);
 					goto clean_up;
 				}
 
 				if(!CHECK_TARGET_PROC(process_id))
 				{
-					PRINT_TARGET_PROC_ERROR(process_id);
+					PRINT_TARGET_PROC_ERROR();
 					goto clean_up;
 				}
 
@@ -272,7 +272,7 @@ int commandline_parser(int argc, char *argv[])
 		{
 			if(!CHECK_TARGET_PROC(process_id))
 			{
-				PRINT_TARGET_PROC_ERROR(process_id);
+				PRINT_TARGET_PROC_ERROR();
 				goto clean_up;
 			}
 
@@ -289,7 +289,7 @@ int commandline_parser(int argc, char *argv[])
 				}
 				if(!eject)
 				{
-					PRINT_ERROR_MSGA("Ejection failed.");
+					THROW_ERROR_MSGA("Ejection failed.");
 				}
 			}
 			else
@@ -298,14 +298,14 @@ int commandline_parser(int argc, char *argv[])
 				{
 					if(!MapRemoteModuleA(process_id, library_path))
 					{
-						PRINT_ERROR_MSGA("Injection failed.");
+						THROW_ERROR_MSGA("Injection failed.");
 					}
 				}
 				else
 				{
 					if(!InjectLibraryA(process_id, library_path))
 					{
-						PRINT_ERROR_MSGA("Injection failed.");
+						THROW_ERROR_MSGA("Injection failed.");
 					}
 				}
 			}
@@ -344,7 +344,7 @@ int commandline_parser(int argc, char *argv[])
 				if(!EjectLibraryOnStartupA(library_path, process_path,
 					process_arguments == 0 ? "" : process_arguments, ldr_wii))
 				{
-					PRINT_ERROR_MSGA("Ejection failed.");
+					THROW_ERROR_MSGA("Ejection failed.");
 				}
 			}
 			else
@@ -352,7 +352,7 @@ int commandline_parser(int argc, char *argv[])
 				if(!InjectLibraryOnStartupA(library_path, process_path,
 					process_arguments == 0 ? "" : process_arguments, ldr_wii))
 				{
-					PRINT_ERROR_MSGA("Injection failed.");
+					THROW_ERROR_MSGA("Injection failed.");
 				}
 			}
 			goto clean_up;
@@ -360,7 +360,7 @@ int commandline_parser(int argc, char *argv[])
 	}
 	__except(1)
 	{
-		PRINT_ERROR_MSGA("SEH Exception: %X\n", GetExceptionCode());
+		THROW_ERROR_MSGA("SEH Exception: %X\n", GetExceptionCode());
 	}
 
 	//
@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
 
 	if(argc < 2)
 	{
-		PRINT_ERROR_MSGA("Not enough or invalid arguments.");
+		THROW_ERROR_MSGA("Not enough or invalid arguments.");
 		return 0;
 	}
 

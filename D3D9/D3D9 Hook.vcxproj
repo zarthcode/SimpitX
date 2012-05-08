@@ -109,7 +109,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\MinHook\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <EntryPointSymbol>NativeInjectionEntryPoint</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -149,7 +150,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\MinHook\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <EntryPointSymbol>NativeInjectionEntryPoint</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -189,7 +191,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\MinHook\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <EntryPointSymbol>NativeInjectionEntryPoint</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -229,7 +232,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\MinHook\$(Configuration)\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <EntryPointSymbol>NativeInjectionEntryPoint</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

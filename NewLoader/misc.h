@@ -20,25 +20,29 @@
 
 #include <Windows.h>
 #include <stdio.h>
+#include <string>
 
 #if defined(_WIN64)
 
 #define CHECK_TARGET_PROC(pid) IsProcess64(pid) != 0
-#define PRINT_TARGET_PROC_ERROR(pid) printf("Error: x64 loader doesn't support x86 processes (%X).\n", pid)
+#define PRINT_TARGET_PROC_ERROR() ThrowErrorMsgA("Error: x64 loader doesn't support x86 processes.")
 
 #elif defined(_WIN32)
 
 #define CHECK_TARGET_PROC(pid) IsProcess64(pid) != 1
-#define PRINT_TARGET_PROC_ERROR(pid) printf("Error: x86 loader doesn't support x64 processes (%X).\n", pid)
+#define PRINT_TARGET_PROC_ERROR() ThrowErrorMsgA("Error: x86 loader doesn't support x64 processes.")
 
 #endif
 
-void __cdecl PrintErrorMsgA(char *format, ...);
-void __cdecl PrintErrorMsgW(wchar_t *format, ...);
 
-#define PRINT_ERROR_MSGA(...) { printf("Error: [@%s] ", __FUNCTION__); PrintErrorMsgA(__VA_ARGS__); }
-#define PRINT_ERROR_MSGW(...) { wprintf(L"Error: [@%s] ", __FUNCTIONW__); PrintErrorMsgW(__VA_ARGS__); }
+void __cdecl ThrowErrorMsgA(char *format, ...);
+void __cdecl ThrowErrorMsgW(wchar_t *format, ...);
 
+#define THROW_ERROR_MSGA(...) { ThrowErrorMsgA("Exception: ", __FUNCTION__, __VA_ARGS__); }
+#define THROW_ERROR_MSGW(...) { ThrowErrorMsgW(L"Exception: ", __FUNCTIONW__, __VA_ARGS__); }
+
+std::wstring widen( const std::string& str );
+std::string narrow( const std::wstring& str );
 
 wchar_t *__stdcall char_to_wchar_t(const char *src);
 

@@ -84,7 +84,7 @@ FixIAT(
 		// get target process path
 		if(!GetModuleFileNameExW(hProcess, (HMODULE)0, targetProcPath, MAX_PATH))
 		{
-			PRINT_ERROR_MSGA("Could not get path to target process.");
+			THROW_ERROR_MSGA("Could not get path to target process.");
 			__leave;
 		}
 
@@ -96,7 +96,7 @@ FixIAT(
 
 		if(!SetDllDirectoryW(targetProcPath))
 		{
-			PRINT_ERROR_MSGW(L"Could not set path to target process (%s).", targetProcPath);
+			THROW_ERROR_MSGW(L"Could not set path to target process (%s).", targetProcPath);
 			__leave;
 		}
 
@@ -111,21 +111,21 @@ FixIAT(
 			hLocalModule = LoadLibraryExA(lpModuleName, 0, DONT_RESOLVE_DLL_REFERENCES);
 			if(!hLocalModule)
 			{
-				PRINT_ERROR_MSGA("Could not load module locally.");
+				THROW_ERROR_MSGA("Could not load module locally.");
 				__leave;
 			}
 
 			// get full path of module
 			if(!GetModuleFileNameW(hLocalModule, modulePath, MAX_PATH))
 			{
-				PRINT_ERROR_MSGA("Could not get path to module (%s).", lpModuleName);
+				THROW_ERROR_MSGA("Could not get path to module (%s).", lpModuleName);
 				__leave;
 			}
 
 			// get nt path
 			if(!GetFileNameNtW(modulePath, moduleNtPath, 500))
 			{
-				PRINT_ERROR_MSGA("Could not get the NT namespace path.");
+				THROW_ERROR_MSGA("Could not get the NT namespace path.");
 				__leave;
 			}
 
@@ -135,7 +135,7 @@ FixIAT(
 			{
 				if(!InjectLibraryW(dwProcessId, modulePath))
 				{
-					PRINT_ERROR_MSGW(L"Could not inject required module (%s).\n", modulePath);
+					THROW_ERROR_MSGW(L"Could not inject required module (%s).\n", modulePath);
 					__leave;
 				}
 				
@@ -193,7 +193,7 @@ MapSections(
 		if(!WriteProcessMemory(hProcess, lpBaseAddress, lpBuffer, section->SizeOfRawData, &NumBytesWritten) ||
 			NumBytesWritten != section->SizeOfRawData)
 		{
-			PRINT_ERROR_MSGA("Could not write to memory in remote process.");
+			THROW_ERROR_MSGA("Could not write to memory in remote process.");
 			return FALSE;
 		}	
 		
@@ -209,7 +209,7 @@ MapSections(
 		if(!VirtualProtectEx(hProcess, (LPVOID)( (DWORD_PTR)lpModuleBase + section->VirtualAddress ), virtualSize,
 			section->Characteristics & 0x00FFFFFF, lpflOldProtect))
 		{
-			PRINT_ERROR_MSGA("VirtualProtectEx failed.");
+			THROW_ERROR_MSGA("VirtualProtectEx failed.");
 			return FALSE;
 		}
 		*/
@@ -271,7 +271,7 @@ FixRelocations(
 				break;
 
 			default:
-				PRINT_ERROR_MSGA("Unsuppported relocation type.");
+				THROW_ERROR_MSGA("Unsuppported relocation type.");
 				return FALSE;
 			}
 		}
@@ -305,7 +305,7 @@ CallTlsInitializers(
 			if(!ReadProcessMemory(hProcess, (PVOID)pCallbacks, &callback, sizeof(LPVOID), &NumBytesRead) ||
 				NumBytesRead != sizeof(LPVOID))
 			{
-				PRINT_ERROR_MSGA("Could not read memory in remote process.");
+				THROW_ERROR_MSGA("Could not read memory in remote process.");
 				return FALSE;
 			}
 
@@ -354,7 +354,7 @@ MapRemoteModuleW(
 			dwProcessId);
 		if(!hProcess)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
+			THROW_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
 			__leave;
 		}
 
@@ -368,7 +368,7 @@ MapRemoteModuleW(
 			NULL);
 		if(hFile == INVALID_HANDLE_VALUE)
 		{
-			PRINT_ERROR_MSGA("CreateFileW failed.");
+			THROW_ERROR_MSGA("CreateFileW failed.");
 			__leave;
 		}
 
@@ -383,7 +383,7 @@ MapRemoteModuleW(
 
 		if(fileSize == INVALID_FILE_SIZE)
 		{
-			PRINT_ERROR_MSGA("Could not get size of file.");
+			THROW_ERROR_MSGA("Could not get size of file.");
 			__leave;
 		}
 
@@ -393,7 +393,7 @@ MapRemoteModuleW(
 			DWORD NumBytesRead = 0;
 			if(!ReadFile(hFile, dllBin, fileSize, &NumBytesRead, FALSE))
 			{
-				PRINT_ERROR_MSGA("ReadFile failed.");
+				THROW_ERROR_MSGA("ReadFile failed.");
 			}
 		}
 	
@@ -402,7 +402,7 @@ MapRemoteModuleW(
 		// Make sure we got a valid DOS header
 		if(dos_header->e_magic != IMAGE_DOS_SIGNATURE)
 		{
-			PRINT_ERROR_MSGA("Invalid DOS header.");
+			THROW_ERROR_MSGA("Invalid DOS header.");
 			__leave;
 		}
 		
@@ -413,7 +413,7 @@ MapRemoteModuleW(
 		// Verify the PE header
 		if(nt_header->Signature != IMAGE_NT_SIGNATURE)
 		{
-			PRINT_ERROR_MSGA("Invalid PE header.");
+			THROW_ERROR_MSGA("Invalid PE header.");
 			__leave;
 		}
 
@@ -426,7 +426,7 @@ MapRemoteModuleW(
 			PAGE_EXECUTE_READWRITE);
 		if(!lpModuleBase)
 		{
-			PRINT_ERROR_MSGA("Could not allocate memory in remote process.");
+			THROW_ERROR_MSGA("Could not allocate memory in remote process.");
 			__leave;
 		}
 		
@@ -439,7 +439,7 @@ MapRemoteModuleW(
 		{
 			if(!FixIAT(dwProcessId, hProcess, (PBYTE)dllBin, nt_header, pImgImpDesc))
 			{
-				PRINT_ERROR_MSGA("@Fixing imports.");
+				THROW_ERROR_MSGA("@Fixing imports.");
 				__leave;
 			}
 		}
@@ -453,7 +453,7 @@ MapRemoteModuleW(
 		{
 			if(!FixRelocations(dllBin, lpModuleBase, nt_header, pImgBaseReloc))
 			{
-				PRINT_ERROR_MSGA("@Fixing relocations.");
+				THROW_ERROR_MSGA("@Fixing relocations.");
 				__leave;
 			}
 		}
@@ -468,7 +468,7 @@ MapRemoteModuleW(
 			if(!WriteProcessMemory(hProcess, lpModuleBase, dllBin, nSize, &NumBytesWritten) ||
 				NumBytesWritten != nSize)
 			{
-				PRINT_ERROR_MSGA("Could not write to memory in remote process.");
+				THROW_ERROR_MSGA("Could not write to memory in remote process.");
 				__leave;
 			}
 		}
@@ -477,7 +477,7 @@ MapRemoteModuleW(
 		// along their virtual addresses)
 		if(!MapSections(hProcess, lpModuleBase, dllBin, nt_header))
 		{
-			PRINT_ERROR_MSGA("@Map sections.");
+			THROW_ERROR_MSGA("@Map sections.");
 			__leave;
 		}
 
@@ -491,7 +491,7 @@ MapRemoteModuleW(
 		{
 			if(!CallTlsInitializers(dllBin, nt_header, hProcess, (HMODULE)lpModuleBase, DLL_PROCESS_ATTACH, pImgTlsDir))
 			{
-				PRINT_ERROR_MSGA("@Call TLS initializers.");
+				THROW_ERROR_MSGA("@Call TLS initializers.");
 				__leave;
 			}
 		}
@@ -502,7 +502,7 @@ MapRemoteModuleW(
 			(LPVOID)( (DWORD_PTR)lpModuleBase + nt_header->OptionalHeader.AddressOfEntryPoint),
 			(HMODULE)lpModuleBase, 1, 0))
 		{
-			PRINT_ERROR_MSGA("@Call DllMain.");
+			THROW_ERROR_MSGA("@Call DllMain.");
 			__leave;
 		}
 

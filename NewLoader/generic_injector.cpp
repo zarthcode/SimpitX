@@ -48,14 +48,14 @@ InjectLibraryW(
 		hKernel32Dll = GetModuleHandleW(L"Kernel32");
 		if(!hKernel32Dll)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to Kernel32.");
+			THROW_ERROR_MSGA("Could not get handle to Kernel32.");
 			__leave;
 		}
 
 		lpLoadLibraryW = (PTHREAD_START_ROUTINE)GetProcAddress(hKernel32Dll, "LoadLibraryW");
 		if(lpLoadLibraryW == 0)
 		{
-			PRINT_ERROR_MSGA("Could not get the address of LoadLibraryW.");
+			THROW_ERROR_MSGA("Could not get the address of LoadLibraryW.");
 			__leave;
 		}
 		// Get a handle for the target process.
@@ -69,26 +69,26 @@ InjectLibraryW(
 			dwProcessId);
 		if(!hProcess)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
+			THROW_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
 			__leave;
 		}
 
 		// suspend process
 		if(!(bProcSuspend = SuspendResumeProcess(dwProcessId, FALSE)))
 		{
-			PRINT_ERROR_MSGA("Could not suspend process.");
+			THROW_ERROR_MSGA("Could not suspend process.");
 			__leave;
 		}
 
 		if(!GetFileNameNtW(lpLibPath, NtFileNameThis, MAX_PATH))
 		{
-			PRINT_ERROR_MSGA("Could not get the NT namespace path.");
+			THROW_ERROR_MSGA("Could not get the NT namespace path.");
 			__leave;
 		}
 
 		if(ModuleInjectedW(hProcess, NtFileNameThis) != 0)
 		{
-			PRINT_ERROR_MSGW(L"Module (%s) already in process (PID: %x).", NtFileNameThis, dwProcessId);
+			THROW_ERROR_MSGW(L"Module (%s) already in process (PID: %x).", NtFileNameThis, dwProcessId);
 			__leave;
 		}
 
@@ -104,21 +104,21 @@ InjectLibraryW(
 			PAGE_READWRITE);
 		if(!lpLibFileRemote)
 		{
-			PRINT_ERROR_MSGA("Could not allocate memory in remote process.");
+			THROW_ERROR_MSGA("Could not allocate memory in remote process.");
 			__leave;
 		}
 
 		if(!WriteProcessMemory(hProcess, lpLibFileRemote, (LPCVOID)(lpLibPath), LibPathLen, &NumBytesWritten) ||
 			NumBytesWritten != LibPathLen)
 		{
-			PRINT_ERROR_MSGA("Could not write to memory in remote process.");
+			THROW_ERROR_MSGA("Could not write to memory in remote process.");
 			__leave;
 		}
 
 		// flush instruction cache
 		if(!FlushInstructionCache(hProcess, lpLibFileRemote, LibPathLen))
 		{
-			PRINT_ERROR_MSGA("Could not flush instruction cache.");
+			THROW_ERROR_MSGA("Could not flush instruction cache.");
 			__leave;
 		}
 
@@ -133,33 +133,33 @@ InjectLibraryW(
 			&dwThreadId);
 		if(hThread == 0)
 		{
-			PRINT_ERROR_MSGA("Could not create thread in remote process.");
+			THROW_ERROR_MSGA("Could not create thread in remote process.");
 			__leave;
 		}
 
 		if(!SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL))
 		{
-			PRINT_ERROR_MSGA("Could not set thread priority.");
+			THROW_ERROR_MSGA("Could not set thread priority.");
 			__leave;
 		}
 
 		if(!HideThreadFromDebugger(dwThreadId))
 		{
-			PRINT_ERROR_MSGA("Could not hide thread in remote process (ThreadId: 0x%X).", dwThreadId);
+			THROW_ERROR_MSGA("Could not hide thread in remote process (ThreadId: 0x%X).", dwThreadId);
 			__leave;
 		}
 
 		// Wait for the remote thread to terminate
 		if(WaitForSingleObject(hThread, INJLIB_WAITTIMEOUT) == WAIT_FAILED)
 		{
-			PRINT_ERROR_MSGA("WaitForSingleObject failed.");
+			THROW_ERROR_MSGA("WaitForSingleObject failed.");
 			__leave;
 		}
 
 		// Get thread exit code
 		if(!GetExitCodeThread(hThread, &dwExitCode))
 		{
-			PRINT_ERROR_MSGA("Could not get thread exit code.");
+			THROW_ERROR_MSGA("Could not get thread exit code.");
 			__leave;
 		}
 
@@ -174,14 +174,14 @@ InjectLibraryW(
 			if(!ReadProcessMemory(hProcess, lpInjectedModule, &dos_header, sizeof(IMAGE_DOS_HEADER), &NumBytesRead) ||
 				NumBytesRead != sizeof(IMAGE_DOS_HEADER))
 			{
-				PRINT_ERROR_MSGA("Could not read memory in remote process.");
+				THROW_ERROR_MSGA("Could not read memory in remote process.");
 				__leave;
 			}
 			lpNtHeaderAddress = (LPVOID)( (DWORD_PTR)lpInjectedModule + dos_header.e_lfanew );
 			if(!ReadProcessMemory(hProcess, lpNtHeaderAddress, &nt_header, sizeof(IMAGE_NT_HEADERS), &NumBytesRead) ||
 				NumBytesRead != sizeof(IMAGE_NT_HEADERS))
 			{
-				PRINT_ERROR_MSGA("Could not read memory in remote process.");
+				THROW_ERROR_MSGA("Could not read memory in remote process.");
 				__leave;
 			}
 
@@ -204,7 +204,7 @@ InjectLibraryW(
 		{
 			if(lpInjectedModule == 0)
 			{
-				PRINT_ERROR_MSGA("Unknown Error (LoadLibraryW).");
+				THROW_ERROR_MSGA("Unknown Error (LoadLibraryW).");
 				__leave;
 			}
 		}
@@ -233,7 +233,7 @@ InjectLibraryW(
 		{
 			if(!SuspendResumeProcess(dwProcessId, TRUE))
 			{
-				PRINT_ERROR_MSGA("Could not resume process.");
+				THROW_ERROR_MSGA("Could not resume process.");
 			}
 		}
 	}
@@ -288,14 +288,14 @@ EjectLibrary(
 		hKernel32Dll = GetModuleHandleW(L"Kernel32");
 		if(!hKernel32Dll)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to Kernel32.");
+			THROW_ERROR_MSGA("Could not get handle to Kernel32.");
 			__leave;
 		}
 
 		lpFreeLibrary = (PTHREAD_START_ROUTINE)GetProcAddress(hKernel32Dll, "FreeLibrary");
 		if(lpFreeLibrary == 0)
 		{
-			PRINT_ERROR_MSGA("Could not get the address of FreeLibrary.");
+			THROW_ERROR_MSGA("Could not get the address of FreeLibrary.");
 			__leave;
 		}
 
@@ -310,14 +310,14 @@ EjectLibrary(
 			dwProcessId);
 		if(!hProcess)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
+			THROW_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
 			__leave;
 		}
 
 		// suspend process
 		if(!(bProcSuspend = SuspendResumeProcess(dwProcessId, FALSE)))
 		{
-			PRINT_ERROR_MSGA("Could not suspend process.");
+			THROW_ERROR_MSGA("Could not suspend process.");
 			__leave;
 		}
 
@@ -331,19 +331,19 @@ EjectLibrary(
 			&dwThreadId);
 		if(hThread == 0)
 		{
-			PRINT_ERROR_MSGA("Could not create thread in remote process.");
+			THROW_ERROR_MSGA("Could not create thread in remote process.");
 			__leave;
 		}
 
 		if(!SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL))
 		{
-			PRINT_ERROR_MSGA("Could not set thread priority.");
+			THROW_ERROR_MSGA("Could not set thread priority.");
 			__leave;
 		}
 
 		if(!HideThreadFromDebugger(dwThreadId))
 		{
-			PRINT_ERROR_MSGA("Could not hide thread in remote process (ThreadId: 0x%X).", dwThreadId);
+			THROW_ERROR_MSGA("Could not hide thread in remote process (ThreadId: 0x%X).", dwThreadId);
 			__leave;
 		}
 
@@ -394,7 +394,7 @@ EjectLibrary(
 		{
 			if(!SuspendResumeProcess(dwProcessId, TRUE))
 			{
-				PRINT_ERROR_MSGA("Could not resume process.");
+				THROW_ERROR_MSGA("Could not resume process.");
 			}
 		}
 	}
@@ -429,13 +429,13 @@ EjectLibraryW(
 		dwProcessId);
 		if(!hProcess)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to process.");
+			THROW_ERROR_MSGA("Could not get handle to process.");
 			__leave;
 		}
 
 		if(!GetFileNameNtW(lpLibPath, NtFileNameThis, MAX_PATH))
 		{
-			PRINT_ERROR_MSGA("Could not get the NT namespace path.");
+			THROW_ERROR_MSGA("Could not get the NT namespace path.");
 			__leave;
 		}
 
@@ -461,7 +461,7 @@ EjectLibraryW(
 						NtMappedFileName,
 						MAX_PATH) == 0)
 					{
-						PRINT_ERROR_MSGA("GetMappedFileNameW failed.");
+						THROW_ERROR_MSGA("GetMappedFileNameW failed.");
 						__leave;
 					}
 
@@ -469,7 +469,7 @@ EjectLibraryW(
 					{
 						if(!EjectLibrary(dwProcessId, mem_basic_info.AllocationBase))
 						{
-							PRINT_ERROR_MSGA("Ejection failed. (AllocationBase: 0x%p | PID: %x)", mem_basic_info.AllocationBase, dwProcessId);
+							THROW_ERROR_MSGA("Ejection failed. (AllocationBase: 0x%p | PID: %x)", mem_basic_info.AllocationBase, dwProcessId);
 						}
 					}
 				}
@@ -477,7 +477,7 @@ EjectLibraryW(
 			// VirtualQueryEx failed
 			else
 			{
-				PRINT_ERROR_MSGA("VirtualQueryEx failed.");
+				THROW_ERROR_MSGA("VirtualQueryEx failed.");
 				__leave;
 			}
 		}
@@ -556,13 +556,13 @@ InjectLibraryOnStartupW(
 			&si,
 			&pi))
 		{
-			PRINT_ERROR_MSGA("Process could not be loaded.");
+			THROW_ERROR_MSGA("Process could not be loaded.");
 			__leave;
 		}
 
 		if(ResumeThread(pi.hThread) == (DWORD)-1)
 		{
-			PRINT_ERROR_MSGA("Could not resume process.");
+			THROW_ERROR_MSGA("Could not resume process.");
 			__leave;
 		}
 
@@ -571,7 +571,7 @@ InjectLibraryOnStartupW(
 		{
 			if(WaitForInputIdle(pi.hProcess, WII_WAITTIMEOUT) != 0)
 			{
-				PRINT_ERROR_MSGA("WaitForInputIdle failed.");
+				THROW_ERROR_MSGA("WaitForInputIdle failed.");
 				__leave;
 			}
 		}
@@ -654,13 +654,13 @@ EjectLibraryOnStartupW(
 			&si,
 			&pi))
 		{
-			PRINT_ERROR_MSGA("Process could not be loaded.");
+			THROW_ERROR_MSGA("Process could not be loaded.");
 			__leave;
 		}
 
 		if(ResumeThread(pi.hThread) == (DWORD)-1)
 		{
-			PRINT_ERROR_MSGA("Could not resume process.");
+			THROW_ERROR_MSGA("Could not resume process.");
 			__leave;
 		}
 
@@ -669,7 +669,7 @@ EjectLibraryOnStartupW(
 		{
 			if(WaitForInputIdle(pi.hProcess, WII_WAITTIMEOUT) != 0)
 			{
-				PRINT_ERROR_MSGA("WaitForInputIdle failed.");
+				THROW_ERROR_MSGA("WaitForInputIdle failed.");
 				__leave;
 			}
 		}

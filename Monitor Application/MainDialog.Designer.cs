@@ -82,6 +82,7 @@
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.findProgramDialog = new System.Windows.Forms.OpenFileDialog();
 			this.mainDialogBindingSource = new System.Windows.Forms.BindingSource(this.components);
+			this.startInjectorHelperCheckBox = new System.Windows.Forms.CheckBox();
 			this.tabControl.SuspendLayout();
 			this.statusPage.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -239,7 +240,7 @@
 			this.groupBox4.Controls.Add(this.alwaysShowTrayIconCheckBox);
 			this.groupBox4.Controls.Add(this.closeToTrayCheckBox);
 			this.groupBox4.Controls.Add(this.minimizeToTrayBox);
-			this.groupBox4.Location = new System.Drawing.Point(6, 60);
+			this.groupBox4.Location = new System.Drawing.Point(6, 78);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(291, 71);
 			this.groupBox4.TabIndex = 7;
@@ -290,11 +291,12 @@
 			// 
 			this.genericGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.genericGroupBox.Controls.Add(this.startInjectorHelperCheckBox);
 			this.genericGroupBox.Controls.Add(this.startMinimizedCheckBox);
 			this.genericGroupBox.Controls.Add(this.runOnStartupCheckBox);
 			this.genericGroupBox.Location = new System.Drawing.Point(6, 6);
 			this.genericGroupBox.Name = "genericGroupBox";
-			this.genericGroupBox.Size = new System.Drawing.Size(291, 48);
+			this.genericGroupBox.Size = new System.Drawing.Size(291, 66);
 			this.genericGroupBox.TabIndex = 6;
 			this.genericGroupBox.TabStop = false;
 			this.genericGroupBox.Text = "Generic Options";
@@ -652,6 +654,17 @@
 			// 
 			this.mainDialogBindingSource.DataSource = typeof(Monitor_Application.MainDialog);
 			// 
+			// startInjectorHelperCheckBox
+			// 
+			this.startInjectorHelperCheckBox.AutoSize = true;
+			this.startInjectorHelperCheckBox.Location = new System.Drawing.Point(6, 43);
+			this.startInjectorHelperCheckBox.Name = "startInjectorHelperCheckBox";
+			this.startInjectorHelperCheckBox.Size = new System.Drawing.Size(147, 17);
+			this.startInjectorHelperCheckBox.TabIndex = 6;
+			this.startInjectorHelperCheckBox.Text = "Fast 32-bit plugin support ";
+			this.startInjectorHelperCheckBox.UseVisualStyleBackColor = true;
+			this.startInjectorHelperCheckBox.CheckedChanged += new System.EventHandler(this.startInjectorHelperCheckBox_CheckedChanged);
+			// 
 			// MainDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -749,6 +762,7 @@
 		private System.Windows.Forms.ListBox pluginListBox;
 		private System.Windows.Forms.Label pluginDescLabel;
 		private System.Windows.Forms.Label pluginDetailLabel;
+		private System.Windows.Forms.CheckBox startInjectorHelperCheckBox;
     }
 }
 

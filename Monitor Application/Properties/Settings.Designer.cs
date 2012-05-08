@@ -202,5 +202,17 @@ namespace Monitor_Application.Properties {
                 this["StartMinimized"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StartInjectorHelper {
+            get {
+                return ((bool)(this["StartInjectorHelper"]));
+            }
+            set {
+                this["StartInjectorHelper"] = value;
+            }
+        }
     }
 }

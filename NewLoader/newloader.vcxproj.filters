@@ -36,6 +36,9 @@
     <ClCompile Include="misc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NewLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="misc.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="manualmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

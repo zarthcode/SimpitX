@@ -46,7 +46,7 @@ BOOL RemoteDllMainCall(HANDLE hProcess, LPVOID lpModuleEntry, HMODULE hModule, D
 			PAGE_EXECUTE_READWRITE);
 		if(!lpParam)
 		{
-			PRINT_ERROR_MSGA("Could not allocate memory in remote process.");
+			THROW_ERROR_MSGA("Could not allocate memory in remote process.");
 			__leave;
 		}
 
@@ -58,7 +58,7 @@ BOOL RemoteDllMainCall(HANDLE hProcess, LPVOID lpModuleEntry, HMODULE hModule, D
 			PAGE_EXECUTE_READWRITE);
 		if(!lpDllCallWrapper)
 		{
-			PRINT_ERROR_MSGA("Could not allocate memory in remote process.");
+			THROW_ERROR_MSGA("Could not allocate memory in remote process.");
 			__leave;
 		}
 
@@ -67,20 +67,20 @@ BOOL RemoteDllMainCall(HANDLE hProcess, LPVOID lpModuleEntry, HMODULE hModule, D
 			if(!WriteProcessMemory(hProcess, lpParam, (LPCVOID)&dllMainCall, sizeof(struct DLLMAINCALL), &NumBytesWritten) ||
 				NumBytesWritten != sizeof(struct DLLMAINCALL))
 			{
-				PRINT_ERROR_MSGA("Could not write to memory in remote process.");
+				THROW_ERROR_MSGA("Could not write to memory in remote process.");
 				__leave;
 			}
 			if(!WriteProcessMemory(hProcess, lpDllCallWrapper, (LPCVOID)DllMainWrapper, DllMainWrapperSize, &NumBytesWritten) ||
 				NumBytesWritten != DllMainWrapperSize)
 			{
-				PRINT_ERROR_MSGA("Could not write to memory in remote process.");
+				THROW_ERROR_MSGA("Could not write to memory in remote process.");
 				__leave;
 			}
 
 			// flush instruction cache
 			if(!FlushInstructionCache(hProcess, lpDllCallWrapper, DllMainWrapperSize))
 			{
-				PRINT_ERROR_MSGA("Could not flush instruction cache.");
+				THROW_ERROR_MSGA("Could not flush instruction cache.");
 				__leave;
 			}
 		}
@@ -88,27 +88,27 @@ BOOL RemoteDllMainCall(HANDLE hProcess, LPVOID lpModuleEntry, HMODULE hModule, D
 		hThread = CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)lpDllCallWrapper, lpParam, 0, &dwThreadId);
 		if(!hThread)
 		{
-			PRINT_ERROR_MSGA("Could not create thread in remote process.");
+			THROW_ERROR_MSGA("Could not create thread in remote process.");
 			__leave;
 		}
 
 		if(!SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL))
 		{
-			PRINT_ERROR_MSGA("Could not set thread priority.");
+			THROW_ERROR_MSGA("Could not set thread priority.");
 			__leave;
 		}
 		
 		// Wait for the remote thread to terminate
 		if(WaitForSingleObject(hThread, WII_WAITTIMEOUT) == WAIT_FAILED)
 		{
-			PRINT_ERROR_MSGA("WaitForSingleObject failed.");
+			THROW_ERROR_MSGA("WaitForSingleObject failed.");
 			__leave;
 		}
 
 		// Get thread exit code
 		if(!GetExitCodeThread(hThread, &dwExitCode))
 		{
-			PRINT_ERROR_MSGA("Could not get thread exit code.");
+			THROW_ERROR_MSGA("Could not get thread exit code.");
 			__leave;
 		}
 		

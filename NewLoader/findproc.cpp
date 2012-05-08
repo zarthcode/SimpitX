@@ -33,13 +33,13 @@ BOOL CALLBACK EWP_DirectInject(HWND hwnd, LPARAM lParam)
 			GetWindowThreadProcessId(hwnd, &dwPid);
 			if(dwPid == 0)
 			{
-				PRINT_ERROR_MSGA("Could not get ProcessId from window handle (hwnd: 0x%p).",
+				THROW_ERROR_MSGA("Could not get ProcessId from window handle (hwnd: 0x%p).",
 					hwnd);
 			}
 
 			if(!CHECK_TARGET_PROC(dwPid))
 			{
-				PRINT_TARGET_PROC_ERROR(dwPid);
+				PRINT_TARGET_PROC_ERROR();
 				return TRUE;
 			}
 
@@ -49,7 +49,7 @@ BOOL CALLBACK EWP_DirectInject(HWND hwnd, LPARAM lParam)
 				{
 					if(!MapRemoteModuleA(dwPid, injdata.libpath))
 					{
-						PRINT_ERROR_MSGA("Failed to map the PE file into the remote address space of a process (PID: %x)\n",
+						THROW_ERROR_MSGA("Failed to map the PE file into the remote address space of a process (PID: %x)\n",
 							dwPid);
 					}
 				}
@@ -82,13 +82,13 @@ BOOL CALLBACK EWP_DirectInject(HWND hwnd, LPARAM lParam)
 			GetWindowThreadProcessId(hwnd, &dwPid);
 			if(dwPid == 0)
 			{
-				PRINT_ERROR_MSGA("Could not get ProcessId from window handle (hwnd: 0x%p).",
+				THROW_ERROR_MSGA("Could not get ProcessId from window handle (hwnd: 0x%p).",
 					hwnd);
 			}
 
 			if(!CHECK_TARGET_PROC(dwPid))
 			{
-				PRINT_TARGET_PROC_ERROR(dwPid);
+				PRINT_TARGET_PROC_ERROR();
 				return TRUE;
 			}
 
@@ -98,7 +98,7 @@ BOOL CALLBACK EWP_DirectInject(HWND hwnd, LPARAM lParam)
 				{
 					if(!MapRemoteModuleA(dwPid, injdata.libpath))
 					{
-						PRINT_ERROR_MSGA("Failed to map the PE file into the remote address space of a process (PID: %x)\n",
+						THROW_ERROR_MSGA("Failed to map the PE file into the remote address space of a process (PID: %x)\n",
 							dwPid);
 					}
 				}
@@ -133,7 +133,7 @@ BOOL InjectEjectToWindowTitleA(LPCSTR lpWindowName, LPCSTR lpLibPath, LPVOID lpM
 		DWORD dwLastError = GetLastError();
 		if(dwLastError)
 		{
-			PRINT_ERROR_MSGA("EnumWindows failed.");
+			THROW_ERROR_MSGA("EnumWindows failed.");
 			return FALSE;
 		}
 	}
@@ -150,7 +150,7 @@ BOOL InjectEjectToWindowClassA(LPCSTR lpClassName, LPCSTR lpLibPath, LPVOID lpMo
 		DWORD dwLastError = GetLastError();
 		if(dwLastError)
 		{
-			PRINT_ERROR_MSGA("EnumWindows failed.");
+			THROW_ERROR_MSGA("EnumWindows failed.");
 			return FALSE;
 		}
 	}
@@ -166,7 +166,7 @@ BOOL InjectEjectToProcessNameA(LPCSTR lpProcName, LPCSTR lpLibPath, LPVOID lpMod
 	hProcSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if(hProcSnap == INVALID_HANDLE_VALUE)
 	{
-		PRINT_ERROR_MSGA("Could not get process snapshot.");
+		THROW_ERROR_MSGA("Could not get process snapshot.");
 		return FALSE;
 	}
 
@@ -178,7 +178,7 @@ BOOL InjectEjectToProcessNameA(LPCSTR lpProcName, LPCSTR lpLibPath, LPVOID lpMod
 			{
 				if(!CHECK_TARGET_PROC(pe32.th32ProcessID))
 				{
-					PRINT_TARGET_PROC_ERROR(pe32.th32ProcessID);
+					PRINT_TARGET_PROC_ERROR();
 					continue;
 				}
 
@@ -190,7 +190,7 @@ BOOL InjectEjectToProcessNameA(LPCSTR lpProcName, LPCSTR lpLibPath, LPVOID lpMod
 					{
 						if(!MapRemoteModuleA(pe32.th32ProcessID, lpLibPath))
 						{
-							PRINT_ERROR_MSGA("Failed to map the PE file into the remote address space of a process (PID: %x)\n",
+							THROW_ERROR_MSGA("Failed to map the PE file into the remote address space of a process (PID: %x)\n",
 								pe32.th32ProcessID);
 						}
 					}
@@ -198,7 +198,7 @@ BOOL InjectEjectToProcessNameA(LPCSTR lpProcName, LPCSTR lpLibPath, LPVOID lpMod
 					{
 						if(!InjectLibraryA(pe32.th32ProcessID, lpLibPath))
 						{
-							PRINT_ERROR_MSGA("Injection failed. (PID: %x)", pe32.th32ProcessID);
+							THROW_ERROR_MSGA("Injection failed. (PID: %x)", pe32.th32ProcessID);
 						}
 					}
 				}
@@ -208,14 +208,14 @@ BOOL InjectEjectToProcessNameA(LPCSTR lpProcName, LPCSTR lpLibPath, LPVOID lpMod
 					{
 						if(!EjectLibrary(pe32.th32ProcessID, lpModule))
 						{
-							PRINT_ERROR_MSGA("Ejection failed. (PID: %x)", pe32.th32ProcessID);
+							THROW_ERROR_MSGA("Ejection failed. (PID: %x)", pe32.th32ProcessID);
 						}
 					}
 					else
 					{
 						if(!EjectLibraryA(pe32.th32ProcessID, lpLibPath))
 						{
-							PRINT_ERROR_MSGA("Ejection failed. (PID: %x)", pe32.th32ProcessID);
+							THROW_ERROR_MSGA("Ejection failed. (PID: %x)", pe32.th32ProcessID);
 						}
 					}
 				}
@@ -228,7 +228,7 @@ BOOL InjectEjectToProcessNameA(LPCSTR lpProcName, LPCSTR lpLibPath, LPVOID lpMod
 
 	if(!bFound)
 	{
-		PRINT_ERROR_MSGA("Could not find process (%s).", lpProcName);
+		THROW_ERROR_MSGA("Could not find process (%s).", lpProcName);
 	}
 
 	return bFound;

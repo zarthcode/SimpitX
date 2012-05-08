@@ -2,17 +2,56 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EasyHook;
+using System.Runtime.InteropServices;
+using System.IO;
+using System.IO.Pipes;
+using System.ServiceProcess;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+
 namespace Monitor_Application
 {
 	public class ProgramInstance
 	{
+		// Used to control the injection helper.
+		static ServiceController service = new ServiceController("SimpitX");
 
 		private ProgramConfiguration instanceConfiguration;
 		private WMI.Win32.Win32_Process processInformation;
 
 		public static Dictionary<uint, ProgramInstance> runningProgramInstances = new Dictionary<uint, ProgramInstance>();
 
+
+		[DllImport("newloaderx64.dll")]
+		static extern bool Is64Bit(uint ProcessId);
+		
+		[DllImport("newloaderx64.dll", CharSet = CharSet.Unicode)]
+		static extern bool InjectIntoProcess(uint ProcessId, string LibPath);
+
+		[DllImport("newloaderx64.dll", CharSet = CharSet.Unicode)]
+		static extern string GetErrorMsgW();
+
+		[DllImport("newloaderwin32.dll", EntryPoint = "Is64Bit")]
+		static extern bool Is64Bit_x86(uint ProcessId);
+
+		[DllImport("newloaderWin32.dll", EntryPoint = "InjectIntoProcess", CharSet = CharSet.Unicode)]
+		static extern bool InjectIntoProcess_x86(uint ProcessId, string LibPath);
+
+		[DllImport("newloaderWin32.dll", EntryPoint = "GetErrorMsgW", CharSet = CharSet.Unicode)]
+		static extern string GetErrorMsgW_x86();
+
+		public static bool Is64BitProcess
+		{
+			get { return IntPtr.Size == 8; }
+		}
+
+
+
+		/// <summary>
+		/// Constructor for the ProgramInstance class
+		/// </summary>
+		/// <param name="config">reference to configuration data describing what must be done.</param>
+		/// <param name="process">process information unique for this instance</param>
 		public ProgramInstance(ProgramConfiguration config, WMI.Win32.Win32_Process process)
 		{
 			instanceConfiguration = config;
@@ -23,6 +62,9 @@ namespace Monitor_Application
 
 		}
 
+		/// <summary>
+		/// Runs/Starts all plugins for this running program
+		/// </summary>
 		public void Start()
 		{
 
@@ -38,17 +80,99 @@ namespace Monitor_Application
 					Console.WriteLine("Injecting " + plugin.Name);
 					try
 					{
-						Console.WriteLine("Calling \n\t NativeAPI.RhInjectLibrary(" +
-							(int)processInformation.ProcessId + ", 0, 0, " +
-							plugin.GetLibraryx86() + ", " +
-							plugin.GetLibraryx64() + ", " +
-							IntPtr.Zero + ", 0);");
-						// RemoteHooking.Inject((int)processInformation.ProcessId, InjectionOptions.DoNotRequireStrongName, plugin.GetLibraryx86(), plugin.GetLibraryx64(), null);
-						NativeAPI.RhInjectLibrary((int)processInformation.ProcessId, 0, NativeAPI.EASYHOOK_INJECT_DEFAULT, plugin.GetLibraryx86(), plugin.GetLibraryx64(), IntPtr.Zero, 0);
+
+						Console.WriteLine("Determining target process architecture...");
+
+						if (Is64BitProcess)
+						{
+							if (Is64Bit(processInformation.ProcessId))
+							{
+								Console.WriteLine("\t...64-bit");
+								Console.WriteLine("Injecting '" + plugin.GetLibraryx64() + "'into PID " + processInformation.ProcessId + ".");
+								if (!InjectIntoProcess(processInformation.ProcessId, plugin.GetLibraryx64()))
+								{
+									Console.WriteLine("\tFailed!");
+								
+									throw new Exception(GetErrorMsgW());
+								}
+							}
+							else
+							{
+								Console.WriteLine("\t...32-bit (across WOW64 boundary)");
+								bool helperCleanup = false;
+								// Start the injection helper service.
+								if (service.Status != ServiceControllerStatus.Running)
+								{
+									Console.WriteLine("Injection Helper Service is NOT running. Attempting to start.");
+									helperCleanup = true;
+									StartInjectionHelperSvc(true);
+									
+								}
+
+								Console.WriteLine("Opening connection to injection helper service.");
+								// Connect to the service 
+								using (NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", "SimpitXInjectionHelper", PipeDirection.Out, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation))
+								{
+									// 200mS timeout on connecting.
+									pipeStream.Connect(200);
+
+									Console.WriteLine("Connection established, sending command.");
+
+									// Format the command
+									BinaryFormatter formatter = new BinaryFormatter();
+
+									List<Object> commandDetails = new List<Object>();
+
+									String command = "InjectIntoProcess";
+
+									commandDetails.Add(command);
+									commandDetails.Add(processInformation.ProcessId);
+									commandDetails.Add(plugin.GetLibraryx86());
+
+									// Send.
+									formatter.Serialize(pipeStream, commandDetails);
+									pipeStream.Flush();
+
+									// Disconnect									
+
+								}
+
+								if (helperCleanup)
+								{
+									StopInjectionHelperSvc(true);
+								}
+
+							}
+						}
+						else
+						{
+							if (Is64Bit_x86(processInformation.ProcessId))
+							{
+								
+								// Exactly how does one run a 64bit process on a 32bit OS, anyway?
+								// Sarcasm aside, maybe the user forced a 32bit mode?...exceptional, indeed!
+								throw new Exception("Plugin injection across WOW64 into x64 targets from x86 is unsupported (Please contact support!)");
+							} 
+							else
+							{
+
+								// 32bit target from 32bit executable.
+								Console.WriteLine("\t...32-bit");
+								Console.WriteLine("Injecting '" + plugin.GetLibraryx86() + "'into PID " + processInformation.ProcessId + ".");
+								if (!InjectIntoProcess_x86(processInformation.ProcessId, plugin.GetLibraryx86()))
+								{
+									Console.WriteLine("\tFailed!");
+								
+									throw new Exception(GetErrorMsgW_x86());
+								}
+							}
+						}
+
+
 					}
 					catch (System.Exception ex)
 					{
-						Console.WriteLine("Remote injection attempt failed: " + ex.Message);
+						Console.WriteLine("Remote injection attempt failed: \n\t" + ex.Message);
 						throw ex;
 					}
 				}
@@ -164,6 +288,66 @@ namespace Monitor_Application
 			}
 
 			return orderedPlugins;
+		}
+
+
+		public static void StartInjectionHelperSvc(bool wait = false)
+		{
+			// Start the 32-bit Injection helper service (64bit-only)
+			if (ProgramInstance.Is64BitProcess)
+			{
+				if ((service.Status != ServiceControllerStatus.Running) && (service.Status != ServiceControllerStatus.StartPending))
+				{
+					// Start the helper
+					try
+					{
+						TimeSpan timeout = TimeSpan.FromSeconds(30);
+						service.Start();
+
+						if(wait)
+							service.WaitForStatus(ServiceControllerStatus.Running, timeout);
+					}
+					catch (System.Exception ex)
+					{
+						Console.WriteLine("Injection Help Service start() failed: " + ex.Message);
+						throw ex;
+					}
+				}
+			}
+			else
+			{
+				Console.WriteLine("(Skipping Injection Helper Svc Start Call)");
+			}
+		}
+
+		public static void StopInjectionHelperSvc(bool wait = false)
+		{
+			// Start the 32-bit Injection helper service (64bit-only)
+			if (ProgramInstance.Is64BitProcess)
+			{
+				if ((service.Status != ServiceControllerStatus.Stopped) && (service.Status != ServiceControllerStatus.StopPending))
+				{
+					// Start the helper
+					try
+					{
+						TimeSpan timeout = TimeSpan.FromSeconds(30);
+
+						service.Stop();
+
+						if(wait)
+							service.WaitForStatus(ServiceControllerStatus.Running, timeout);
+					}
+					catch (System.Exception ex)
+					{
+						Console.WriteLine("Injection Help Service stop() failed: " + ex.Message);
+						throw ex;
+					}
+				}
+			}
+			else
+			{
+				Console.WriteLine("(Skipping Injection Helper Svc Stop Call)");
+			}
 		}
 
 	}

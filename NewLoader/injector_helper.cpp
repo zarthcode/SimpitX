@@ -45,7 +45,7 @@ GetRemoteProcAddress(
 		
 		if(!GetModuleFileNameExW(hProcess, hRemoteModule, lpModuleName, MAX_PATH))
 		{
-			PRINT_ERROR_MSGA("Could not get path to remote module.");
+			THROW_ERROR_MSGA("Could not get path to remote module.");
 			__leave;
 		}
 
@@ -59,7 +59,7 @@ GetRemoteProcAddress(
 
 		if(!hLocalModule)
 		{
-			PRINT_ERROR_MSGA("Could not load module locally.");
+			THROW_ERROR_MSGA("Could not load module locally.");
 			__leave;
 		}
 
@@ -67,7 +67,7 @@ GetRemoteProcAddress(
 		fpLocalFunction = GetProcAddress(hLocalModule, lpProcName);
 		if(!fpLocalFunction)
 		{
-			PRINT_ERROR_MSGA("Could not find target function.");
+			THROW_ERROR_MSGA("Could not find target function.");
 			__leave;
 		}
 
@@ -109,19 +109,19 @@ EnablePrivilegeW(
 		if(!OpenProcessToken(GetCurrentProcess(),
 			TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY | TOKEN_READ, &hToken))
 		{
-			PRINT_ERROR_MSGA("Could not open process token.");
+			THROW_ERROR_MSGA("Could not open process token.");
 			__leave;
 		}
 
 		if(!LookupPrivilegeValueW((LPCWSTR)0, lpPrivilegeName, &luid))
 		{
-			PRINT_ERROR_MSGW(L"Could not look up privilege value for \"%s\".",
+			THROW_ERROR_MSGW(L"Could not look up privilege value for \"%s\".",
 				lpPrivilegeName);
 			__leave;
 		}
 		if(luid.LowPart == 0 && luid.HighPart == 0)
 		{
-			PRINT_ERROR_MSGW(L"Could not get LUID for \"%s\".", lpPrivilegeName);
+			THROW_ERROR_MSGW(L"Could not get LUID for \"%s\".", lpPrivilegeName);
 			__leave;
 		}
 
@@ -133,7 +133,7 @@ EnablePrivilegeW(
 		if(!AdjustTokenPrivileges(hToken, FALSE, &token_privileges, sizeof(TOKEN_PRIVILEGES),
 			(PTOKEN_PRIVILEGES)0, (PDWORD)0))
 		{
-			PRINT_ERROR_MSGA("Could not adjust token privileges.");
+			THROW_ERROR_MSGA("Could not adjust token privileges.");
 			__leave;
 		}
 
@@ -171,21 +171,21 @@ SuspendResumeProcess(
 		hNtDll = GetModuleHandleW(L"ntdll");
 		if(!hNtDll)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to ntdll.");
+			THROW_ERROR_MSGA("Could not get handle to ntdll.");
 			__leave;
 		}
 		
 		_NtSuspendProcess = (LONG (NTAPI*)(HANDLE))GetProcAddress(hNtDll, "NtSuspendProcess");
 		if(_NtSuspendProcess == 0)
 		{
-			PRINT_ERROR_MSGA("Could not get the address of NtSuspendProcess.");
+			THROW_ERROR_MSGA("Could not get the address of NtSuspendProcess.");
 			__leave;
 		}
 
 		_NtResumeProcess = (LONG (NTAPI*)(HANDLE))GetProcAddress(hNtDll, "NtResumeProcess");
 		if(_NtResumeProcess == 0)
 		{
-			PRINT_ERROR_MSGA("Could not get the address of NtResumeProcess.");
+			THROW_ERROR_MSGA("Could not get the address of NtResumeProcess.");
 			__leave;
 		}
 		
@@ -196,7 +196,7 @@ SuspendResumeProcess(
 			dwProcessId);
 		if(!hProcess)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to process.");
+			THROW_ERROR_MSGA("Could not get handle to process.");
 			__leave;
 		}
 
@@ -206,7 +206,7 @@ SuspendResumeProcess(
 			LONG ntStatus = (*_NtResumeProcess)(hProcess);
 			if(!NT_SUCCESS(ntStatus))
 			{
-				PRINT_ERROR_MSGA("NtResumeProcess. [NtStatus: 0x%X]", (ULONG)ntStatus);
+				THROW_ERROR_MSGA("NtResumeProcess. [NtStatus: 0x%X]", (ULONG)ntStatus);
 				__leave;
 			}
 		}
@@ -216,7 +216,7 @@ SuspendResumeProcess(
 			LONG ntStatus = (*_NtSuspendProcess)(hProcess);
 			if(!NT_SUCCESS(ntStatus))
 			{
-				PRINT_ERROR_MSGA("NtSuspendProcess. [NtStatus 0x%X]", (ULONG)ntStatus);
+				THROW_ERROR_MSGA("NtSuspendProcess. [NtStatus 0x%X]", (ULONG)ntStatus);
 				__leave;
 			}	
 		}
@@ -258,7 +258,7 @@ HideThreadFromDebugger(
 		hNtDll = GetModuleHandle(TEXT("ntdll"));
 		if(!hNtDll)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to ntdll.");
+			THROW_ERROR_MSGA("Could not get handle to ntdll.");
 			__leave;
 		}
 
@@ -267,7 +267,7 @@ HideThreadFromDebugger(
 			GetProcAddress(hNtDll, "NtSetInformationThread");
 		if(_NtSetInformationThread == 0)
 		{
-			PRINT_ERROR_MSGA("Could not get the address of NtSetInformationThread.");
+			THROW_ERROR_MSGA("Could not get the address of NtSetInformationThread.");
 			__leave;
 		}
 
@@ -277,14 +277,14 @@ HideThreadFromDebugger(
 			dwThreadId);
 		if(hThread == 0)
 		{
-			PRINT_ERROR_MSGA("Could not open thread (ThreadId: %d).", dwThreadId);
+			THROW_ERROR_MSGA("Could not open thread (ThreadId: %d).", dwThreadId);
 			__leave;
 		}
 
 		ntStatus = (*_NtSetInformationThread)(hThread, ThreadHideFromDebugger, 0, 0);
 		if(!NT_SUCCESS(ntStatus))
 		{
-			PRINT_ERROR_MSGA("NtSetInformationThread. [NtStatus 0x%X]", (ULONG)ntStatus);
+			THROW_ERROR_MSGA("NtSetInformationThread. [NtStatus 0x%X]", (ULONG)ntStatus);
 			__leave;
 		}
 
@@ -327,7 +327,7 @@ GetFileNameNtW(
 			0);
 		if(hFile == INVALID_HANDLE_VALUE)
 		{
-			PRINT_ERROR_MSGA("CreateFileW failed.");
+			THROW_ERROR_MSGA("CreateFileW failed.");
 			__leave;
 		}
 
@@ -340,14 +340,14 @@ GetFileNameNtW(
 			0);
 		if(hFileMap == 0)
 		{
-			PRINT_ERROR_MSGA("CreateFileMappingW failed.");
+			THROW_ERROR_MSGA("CreateFileMappingW failed.");
 			__leave;
 		}
 
 		lpMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
 		if(lpMem == 0)
 		{
-			PRINT_ERROR_MSGA("MapViewOfFile failed.");
+			THROW_ERROR_MSGA("MapViewOfFile failed.");
 			__leave;
 		}
 
@@ -357,7 +357,7 @@ GetFileNameNtW(
 			lpFileNameNt,
 			nSize) == 0)
 		{
-			PRINT_ERROR_MSGA("GetMappedFileNameW failed.");
+			THROW_ERROR_MSGA("GetMappedFileNameW failed.");
 			__leave;
 		}
 
@@ -420,7 +420,7 @@ ModuleInjectedW(
 				if(GetMappedFileNameW(hProcess, (HMODULE)mem_basic_info.AllocationBase,
 					NtMappedFileName, MAX_PATH) == 0)
 				{
-					PRINT_ERROR_MSGA("GetMappedFileNameW failed.");
+					THROW_ERROR_MSGA("GetMappedFileNameW failed.");
 					return 0;
 				}
 
@@ -433,7 +433,7 @@ ModuleInjectedW(
 		// VirtualQueryEx failed
 		else
 		{
-			PRINT_ERROR_MSGA("VirtualQueryEx failed.");
+			THROW_ERROR_MSGA("VirtualQueryEx failed.");
 			return 0;
 		}
 			
@@ -468,7 +468,7 @@ ListModules(
 		dwProcessId);
 	if(!hProcess)
 	{
-		PRINT_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
+		THROW_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
 		return;
 	}
 
@@ -539,7 +539,7 @@ ListModules(
 		// VirtualQueryEx failed
 		else
 		{
-			PRINT_ERROR_MSGA("VirtualQueryEx failed.");
+			THROW_ERROR_MSGA("VirtualQueryEx failed.");
 			return;
 		}
 
@@ -561,7 +561,7 @@ MyGetSystemInfo(
 	HMODULE hKernel32Dll = GetModuleHandleW(L"kernel32");
 	if(!hKernel32Dll)
 	{
-		PRINT_ERROR_MSGA("Could not get handle to kernel32.");
+		THROW_ERROR_MSGA("Could not get handle to kernel32.");
 		return;
 	}
 
@@ -608,7 +608,7 @@ IsProcess64(
 		hKernel32Dll = GetModuleHandleW(L"kernel32");
 		if(!hKernel32Dll)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to kernel32.");
+			THROW_ERROR_MSGA("Could not get handle to kernel32.");
 			return -1;
 		}
 
@@ -616,20 +616,20 @@ IsProcess64(
 			hKernel32Dll, "IsWow64Process");
 		if(_IsWow64Process == 0)
 		{
-			PRINT_ERROR_MSGA("Could not get the address of IsWow64Process.");
+			THROW_ERROR_MSGA("Could not get the address of IsWow64Process.");
 			return -1;
 		}
 
 		hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, dwProcessId);
 		if(!hProcess)
 		{
-			PRINT_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
+			THROW_ERROR_MSGA("Could not get handle to process (PID: 0x%X).", dwProcessId);
 			return -1;
 		}
 
 		if(!_IsWow64Process(hProcess, &bIsWow64))
 		{
-			PRINT_ERROR_MSGA("IsWow64Process failed.");
+			THROW_ERROR_MSGA("IsWow64Process failed.");
 			return -1;
 		}
 
