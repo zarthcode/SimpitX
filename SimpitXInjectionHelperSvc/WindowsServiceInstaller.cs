@@ -19,13 +19,10 @@ namespace SimpitXInjectionHelperSvc
 	
 			// set privileges
 			procInstaller.Account = ServiceAccount.NetworkService;
-		//	procInstaller.Username = "Zarthcode-7\\Anthony";
-		//	procInstaller.Password = "_7022112e";
-			
+	
 	
 			svcInstaller.DisplayName = "SimpitX 32-bit DLL Injection Service";
-			svcInstaller.StartType = ServiceStartMode.Automatic;
-
+			svcInstaller.StartType = ServiceStartMode.Automatic;			
 			svcInstaller.Description = "32-bit DLL Injection helper for 64-bit systems.";
 			// Must be the same
 			svcInstaller.ServiceName = "SimpitX";

@@ -124,16 +124,16 @@ namespace Monitor_Application
 									List<Object> commandDetails = new List<Object>();
 
 									String command = "InjectIntoProcess";
-
-									commandDetails.Add(command);
-									commandDetails.Add(processInformation.ProcessId);
-									commandDetails.Add(plugin.GetLibraryx86());
+									
+									commandDetails.Add((String)command);
+									commandDetails.Add((uint)processInformation.ProcessId);
+									commandDetails.Add((String)plugin.GetLibraryx86());
 
 									// Send.
 									formatter.Serialize(pipeStream, commandDetails);
 									pipeStream.Flush();
 
-									// Disconnect									
+									// Disconnect
 
 								}
 

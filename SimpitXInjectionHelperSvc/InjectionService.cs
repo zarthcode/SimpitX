@@ -23,10 +23,15 @@ namespace SimpitXInjectionHelperSvc
 		EventLog log;
 		string logSource = "SimpitX";
 
+		static AutoResetEvent asyncMonitorEvent;
+		Thread AsyncMonitorThread;
+		static bool shutdownFlag = false;
 
 		NamedPipeServerStream injectionHelperPipeStream;
-		List<IAsyncResult> activePipeServers = new List<IAsyncResult>();
+		IAsyncResult activePipeServer;
 
+		
+		
 
 		public InjectionService()
 		{
@@ -51,7 +56,7 @@ namespace SimpitXInjectionHelperSvc
 
 			// Configure pipe security to allow users
 			PipeSecurity ps = new PipeSecurity();
-			System.Security.Principal.SecurityIdentifier securityId = new System.Security.Principal.SecurityIdentifier(WellKnownSidType.WorldSid, null);
+			System.Security.Principal.SecurityIdentifier securityId = new System.Security.Principal.SecurityIdentifier(WellKnownSidType.LocalSid, null);
 			PipeAccessRule psRule = new PipeAccessRule(securityId, PipeAccessRights.ReadWrite, AccessControlType.Allow);
 			ps.AddAccessRule(psRule);
 			try
@@ -68,12 +73,11 @@ namespace SimpitXInjectionHelperSvc
 					log.WriteEntry("\tInnerexception: " + ex.InnerException.Message, EventLogEntryType.Error);
 				}
 			}
-			// Process arguments
 
-
-			// Start waiting for connection
-			activePipeServers.Add(injectionHelperPipeStream.BeginWaitForConnection(InjectionServiceCallback, null));
-
+			asyncMonitorEvent = new AutoResetEvent(false);
+			AsyncMonitorThread = new Thread(AsyncMonitor);
+			AsyncMonitorThread.Start();
+			
 			log.WriteEntry("Service started successfully.", EventLogEntryType.SuccessAudit);
 
 		}
@@ -85,6 +89,11 @@ namespace SimpitXInjectionHelperSvc
 		{
 			base.OnStop();
 			log.WriteEntry("OnStop() received", EventLogEntryType.Information);
+
+			shutdownFlag = true;
+			asyncMonitorEvent.Set();	// Wakeup the monitor thread.
+			AsyncMonitorThread.Join(2000);
+			
 			// Stops listening for connections
 			if (injectionHelperPipeStream.IsConnected)
 			{
@@ -96,6 +105,49 @@ namespace SimpitXInjectionHelperSvc
 
 		}
 
+		public void AsyncMonitor()
+		{
+			log.WriteEntry("Monitor started", EventLogEntryType.Information);
+			do 
+			{
+				// Ensure there are open connections available
+				
+				if ((activePipeServer == null) || (activePipeServer.IsCompleted))
+				{
+					
+					log.WriteEntry("Starting pipe", EventLogEntryType.Information);
+					// Start waiting for connection
+					try
+					{
+						activePipeServer = injectionHelperPipeStream.BeginWaitForConnection(InjectionServiceCallback, null);
+					}
+					catch (System.Exception ex)
+					{
+						log.WriteEntry("Cannot begin new connection yet! " + ex.Message, EventLogEntryType.Information);
+					}
+				}
+
+
+				log.WriteEntry("Monitor going to sleep", EventLogEntryType.Information);
+				
+				// Yield, until awakened
+				asyncMonitorEvent.WaitOne();
+
+				log.WriteEntry("Monitor triggered", EventLogEntryType.Information);
+				
+				if (!shutdownFlag)
+				{
+					asyncMonitorEvent.Reset();
+				}
+
+
+			} while (!shutdownFlag);
+
+			log.WriteEntry("Monitor exiting", EventLogEntryType.Information);
+
+		}
+
+
 		public void InjectionServiceCallback( IAsyncResult ar)
 		{
 			log.WriteEntry("Callback triggered", EventLogEntryType.Information);
@@ -103,6 +155,7 @@ namespace SimpitXInjectionHelperSvc
 			try
 			{
 				injectionHelperPipeStream.EndWaitForConnection(ar);
+				asyncMonitorEvent.Set();
 			}
 			catch(ObjectDisposedException ex)
 			{
@@ -135,9 +188,13 @@ namespace SimpitXInjectionHelperSvc
 
 				// Deserialize the command string.
 				commandDetails = (List<Object>)formatter.Deserialize(injectionHelperPipeStream);
+				injectionHelperPipeStream.Disconnect();
+				asyncMonitorEvent.Set();
+
 				if (commandDetails.Count == 0)
 				{
 					log.WriteEntry("Empty command received!", EventLogEntryType.Error);
+					return;
 				}
 
 				String command = (String)commandDetails[0];
@@ -167,7 +224,7 @@ namespace SimpitXInjectionHelperSvc
 
 
 							// Report the results.
-
+							log.WriteEntry("InjectIntoProcess " + dwProcessId + " " + libPath, EventLogEntryType.Information);
 							break;
 						}
 					default:
@@ -184,10 +241,9 @@ namespace SimpitXInjectionHelperSvc
 				log.WriteEntry("Exception: " + ex.Message, EventLogEntryType.FailureAudit);
 
 			}
-			
 
 			
-				
+	
 		}
 	}
 }
