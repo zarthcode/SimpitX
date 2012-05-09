@@ -94,13 +94,7 @@ namespace Monitor_Application
 							else
 							{
 								Console.WriteLine("\t...32-bit (across WOW64 boundary)");
-								bool helperCleanup = false;
-								// Start the injection helper service.
-								if (lastKnownStatus == false)
-								{
-									helperCleanup = true;
-									StartInjectionHelperSvc();
-								}
+								
 								Console.WriteLine("Opening connection to injection helper service.");
 								// Connect to the service 
 								using (NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", "SimpitXInjectionHelper", PipeDirection.Out, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation))
@@ -127,11 +121,6 @@ namespace Monitor_Application
 
 									// Disconnect
 
-								}
-
-								if (helperCleanup)
-								{
-									StopInjectionHelperSvc();
 								}
 
 							}
@@ -317,7 +306,6 @@ namespace Monitor_Application
 						pipeStream.Flush();
 
 						// Disconnect
-						lastKnownStatus = true;
 					}
 
 				}
@@ -331,7 +319,7 @@ namespace Monitor_Application
 					// Service isn't running properly.
 					Console.WriteLine("Exception thrown while contacting Helper service: " + ex.Message);
 					Console.WriteLine(ex.ToString());
-					lastKnownStatus = false;
+					
 				}
 
 				
@@ -346,8 +334,6 @@ namespace Monitor_Application
 
 		public static void StopInjectionHelperSvc()
 		{
-
-			lastKnownStatus = false;
 
 			// Start the 32-bit Injection helper service (64bit-only)
 			if (ProgramInstance.Is64BitProcess)

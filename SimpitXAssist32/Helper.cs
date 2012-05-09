@@ -32,9 +32,12 @@ namespace SimpitXAssist32
 			get { return IntPtr.Size == 8; }
 		}
 
+		LogWriter log = new LogWriter();
+
 		public InjectorHelper()
 		{
-			Console.SetOut(new StreamWriter("SimpitXAssist32.log", false));
+			log.SetWriter(new FileStream("SimpitXAssist32.log", FileMode.Truncate, FileAccess.Write));
+			Console.SetOut(log);
 
 			if (Is64BitProcess)
 			{

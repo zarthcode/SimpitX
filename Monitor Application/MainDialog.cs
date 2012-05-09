@@ -91,7 +91,7 @@ namespace Monitor_Application
 			// Start monitoring programs
 			StartMonitoring();
 
-			ProgramInstance.StopInjectionHelperSvc();
+			ProgramInstance.StartInjectionHelperSvc();
 
 		}
 
@@ -111,7 +111,6 @@ namespace Monitor_Application
 			// Load generic options
 			this.runOnStartupCheckBox.Checked = Monitor_Application.Properties.Settings.Default.runOnStartup;
 			this.minimizeToTrayBox.Checked = Monitor_Application.Properties.Settings.Default.MinimizeToTray;
-			this.startInjectorHelperCheckBox.Checked = Monitor_Application.Properties.Settings.Default.StartInjectorHelper;
 			
 			// Load window state
 			this.Size = Properties.Settings.Default.WndSize;
@@ -173,7 +172,7 @@ namespace Monitor_Application
 			Properties.Settings.Default.AlwaysShowTrayIcon = this.alwaysShowTrayIconCheckBox.Checked;
 			Properties.Settings.Default.runOnStartup = this.runOnStartupCheckBox.Checked;
 			Properties.Settings.Default.StartMinimized = this.startMinimizedCheckBox.Checked;
-			Properties.Settings.Default.StartInjectorHelper = this.startInjectorHelperCheckBox.Checked;
+
 			// Save window position
 			Properties.Settings.Default.WndState = this.WindowState;
 
@@ -527,7 +526,7 @@ namespace Monitor_Application
 
 			// Shut it down
 			notifyIcon.Visible = false;
-
+			ProgramInstance.StartInjectionHelperSvc();
 
 
 		}
@@ -919,33 +918,6 @@ namespace Monitor_Application
 			pluginDescLabel.Text = currentPlugin.Description;
 		}
 
-		private void startInjectorHelperCheckBox_CheckedChanged(object sender, EventArgs e)
-		{
-			if (startInjectorHelperCheckBox.Checked)
-			{
-				Console.WriteLine("Starting Injection Helper");
-				try
-				{
-					ProgramInstance.StartInjectionHelperSvc();
-				}
-				catch(Exception ex)
-				{
-					Console.WriteLine("\tException thrown: " + ex.Message);
-				}
-			} 
-			else
-			{
-				Console.WriteLine("Stopping Injection Helper");
-				try
-				{
-					ProgramInstance.StopInjectionHelperSvc();
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine("\tException thrown: " + ex.Message);
-				}
-			}
-		}
 
 
 	}
