@@ -229,12 +229,8 @@ namespace SimpitXInjectionHelperSvc
 						uint dwProcessId = (uint)commandDetails[1];
 						String libPath = (String)commandDetails[2];
 
-						// Ensure target is 32bit.
-						if (Is64Bit(dwProcessId))
-						{
-							log.WriteEntry("Target process " + dwProcessId + " is 64-bit!");
-							throw new Exception("Cannot use this helper on 64-bit processes.");
-						}
+						// Todo: Ensure target is 32bit.
+						
 
 						// Call injection method.
 						if (!InjectIntoProcess(dwProcessId, libPath))
