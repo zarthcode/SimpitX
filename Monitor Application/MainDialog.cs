@@ -91,6 +91,8 @@ namespace Monitor_Application
 			// Start monitoring programs
 			StartMonitoring();
 
+			ProgramInstance.StopInjectionHelperSvc();
+
 		}
 
 		/// <summary>
@@ -516,13 +518,15 @@ namespace Monitor_Application
 			}
 
 			// Stop running plugins
-
+	
 			// Tear down program objects
 			StopMonitoring();		
 
 			// Save Settings
 			SaveSettingsData();
 
+			// Shut it down
+			notifyIcon.Visible = false;
 
 
 

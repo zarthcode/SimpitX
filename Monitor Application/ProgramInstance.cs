@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
-using System.IO;
 using System.IO.Pipes;
 using System.ServiceProcess;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Diagnostics;
 
 namespace Monitor_Application
 {
 	public class ProgramInstance
 	{
 		// Used to control the injection helper.
-		static ServiceController service = new ServiceController("SimpitX");
-
 		private ProgramConfiguration instanceConfiguration;
 		private WMI.Win32.Win32_Process processInformation;
 
@@ -101,14 +96,11 @@ namespace Monitor_Application
 								Console.WriteLine("\t...32-bit (across WOW64 boundary)");
 								bool helperCleanup = false;
 								// Start the injection helper service.
-								if (service.Status != ServiceControllerStatus.Running)
+								if (lastKnownStatus == false)
 								{
-									Console.WriteLine("Injection Helper Service is NOT running. Attempting to start.");
 									helperCleanup = true;
-									StartInjectionHelperSvc(true);
-									
+									StartInjectionHelperSvc();
 								}
-
 								Console.WriteLine("Opening connection to injection helper service.");
 								// Connect to the service 
 								using (NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", "SimpitXInjectionHelper", PipeDirection.Out, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation))
@@ -139,7 +131,7 @@ namespace Monitor_Application
 
 								if (helperCleanup)
 								{
-									StopInjectionHelperSvc(true);
+									StopInjectionHelperSvc();
 								}
 
 							}
@@ -291,58 +283,114 @@ namespace Monitor_Application
 			return orderedPlugins;
 		}
 
+		static bool lastKnownStatus = false;
 
-		public static void StartInjectionHelperSvc(bool wait = false)
+		public static void StartInjectionHelperSvc()
 		{
+
 			// Start the 32-bit Injection helper service (64bit-only)
 			if (ProgramInstance.Is64BitProcess)
 			{
-				if ((service.Status != ServiceControllerStatus.Running) && (service.Status != ServiceControllerStatus.StartPending))
-				{
-					// Start the helper
-					try
-					{
-						TimeSpan timeout = TimeSpan.FromSeconds(30);
-						service.Start();
 
-						if(wait)
-							service.WaitForStatus(ServiceControllerStatus.Running, timeout);
-					}
-					catch (System.Exception ex)
+				try
+				{
+
+					// Attempt to connect and send a "ping" command.
+					using (NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", "SimpitXInjectionHelper", PipeDirection.Out, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation))
 					{
-						Console.WriteLine("Injection Help Service start() failed: " + ex.Message);
-						throw ex;
+						// 200mS timeout on connecting.
+						pipeStream.Connect(200);
+
+						Console.WriteLine("Connection established, sending command.");
+
+						// Format the command
+						BinaryFormatter formatter = new BinaryFormatter();
+
+						List<Object> commandDetails = new List<Object>();
+
+						String command = "Ping";
+
+						commandDetails.Add((String)command);
+
+						// Send.
+						formatter.Serialize(pipeStream, commandDetails);
+						pipeStream.Flush();
+
+						// Disconnect
+						lastKnownStatus = true;
 					}
+
 				}
+				catch (System.TimeoutException ex)
+				{
+					// Process isn't running
+					Process.Start("SimpitXAssist32.exe");
+				}
+				catch (Exception ex)
+				{
+					// Service isn't running properly.
+					Console.WriteLine("Exception thrown while contacting Helper service: " + ex.Message);
+					Console.WriteLine(ex.ToString());
+					lastKnownStatus = false;
+				}
+
+				
 			}
 			else
 			{
 				Console.WriteLine("(Skipping Injection Helper Svc Start Call)");
 			}
+
+			
 		}
 
-		public static void StopInjectionHelperSvc(bool wait = false)
+		public static void StopInjectionHelperSvc()
 		{
+
+			lastKnownStatus = false;
+
 			// Start the 32-bit Injection helper service (64bit-only)
 			if (ProgramInstance.Is64BitProcess)
 			{
-				if ((service.Status != ServiceControllerStatus.Stopped) && (service.Status != ServiceControllerStatus.StopPending))
+				try
 				{
-					// Start the helper
-					try
-					{
-						TimeSpan timeout = TimeSpan.FromSeconds(30);
 
-						service.Stop();
-
-						if(wait)
-							service.WaitForStatus(ServiceControllerStatus.Running, timeout);
-					}
-					catch (System.Exception ex)
+					// Attempt to connect and send a "ping" command.
+					using (NamedPipeClientStream pipeStream = new NamedPipeClientStream(".", "SimpitXInjectionHelper", PipeDirection.Out, PipeOptions.None, System.Security.Principal.TokenImpersonationLevel.Impersonation))
 					{
-						Console.WriteLine("Injection Help Service stop() failed: " + ex.Message);
-						throw ex;
+						// 200mS timeout on connecting.
+						pipeStream.Connect(200);
+
+						Console.WriteLine("Connection established, sending command.");
+
+						// Format the command
+						BinaryFormatter formatter = new BinaryFormatter();
+
+						List<Object> commandDetails = new List<Object>();
+
+						String command = "StopService";
+
+						commandDetails.Add((String)command);
+
+						// Send.
+						formatter.Serialize(pipeStream, commandDetails);
+						pipeStream.Flush();
+
+						// Disconnect
+
 					}
+
+				}
+				catch (System.TimeoutException ex)
+				{
+					// Process isn't running
+					Process.Start("SimpitXAssist32.exe");
+				}
+				catch (Exception ex)
+				{
+					// Service isn't running properly.
+					Console.WriteLine("Exception thrown while contacting Helper service: " + ex.Message);
+					Console.WriteLine(ex.ToString());
 				}
 			}
 			else

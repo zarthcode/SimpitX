@@ -39,7 +39,11 @@ namespace SimpitXInjectionHelperSvc
 
 		[DllImport("newloaderwin32.dll", CharSet = CharSet.Unicode)]
 		static extern string GetErrorMsgW();
-		
+
+		public static bool Is64BitProcess
+		{
+			get { return IntPtr.Size == 8; }
+		}
 
 		public InjectionService()
 		{
@@ -55,10 +59,25 @@ namespace SimpitXInjectionHelperSvc
 			// Write the startup even.
 			log.WriteEntry("Initialization.",  EventLogEntryType.Information);
 
+			if (Is64BitProcess)
+			{
+				// Not cool!
+				log.WriteEntry("This helper is running as a 64bit process!", EventLogEntryType.Error);
+			}
+
 		}
 
 		protected override void OnStart(string[] args)
 		{
+
+			if (Is64BitProcess)
+			{
+				// Not cool!
+				log.WriteEntry("This helper cannot start as a 64bit process!", EventLogEntryType.Error);
+				throw new Exception("Cannot run as 64bit native.");
+
+			}
+
 			base.OnStart(args);
 			log.WriteEntry("Service starting.", EventLogEntryType.Information);
 

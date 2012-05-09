@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using EasyHook;
+
 namespace Monitor_Application
 {
 	static class Program
