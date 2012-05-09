@@ -85,6 +85,7 @@
     <Compile Include="EditConfigurationDialog.Designer.cs">
       <DependentUpon>EditConfigurationDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="LogWriter.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="ProgramConfiguration.cs" />
     <Compile Include="GameSettings.cs" />

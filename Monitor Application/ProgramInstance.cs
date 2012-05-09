@@ -217,7 +217,8 @@ namespace Monitor_Application
 
 			if (instanceConfiguration.SettingsDictionary.ContainsKey("Plugins") == false)
 			{
-				throw new Exception("Program has no 'Plugins' configuration section.");
+				Console.WriteLine("Program has no 'Plugins' configuration section...creating");
+				instanceConfiguration.SettingsDictionary.Add("Plugins", new SerializableDictionary<String, String>());
 			}
 
 			// Search the "Plugins" configuration for all enabled plugins.

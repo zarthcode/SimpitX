@@ -16,9 +16,20 @@ std::stringstream error_str;
 
 bool __stdcall Is64Bit(DWORD dwProcessId)
 {
-	if (IsProcess64(dwProcessId))
+	// clear the error string
+	error_str.str("");
+
+	try
 	{
-		return true;
+	
+		if (IsProcess64(dwProcessId))
+		{
+			return true;
+		}
+	}
+	catch (std::exception &ex)
+	{
+		error_str << ex.what();
 	}
 
 	return false;

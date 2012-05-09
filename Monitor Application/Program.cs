@@ -14,14 +14,6 @@ namespace Monitor_Application
 		static void Main()
 		{
 
-			try
-			{
-				Config.Register("SimpitX");
-			}
-			catch (ApplicationException)
-			{
-
-			}
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new MainDialog());

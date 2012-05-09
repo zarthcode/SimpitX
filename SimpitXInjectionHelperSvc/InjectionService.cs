@@ -13,6 +13,7 @@ using System.Security;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.InteropServices;
 
 namespace SimpitXInjectionHelperSvc
 {
@@ -30,7 +31,14 @@ namespace SimpitXInjectionHelperSvc
 		NamedPipeServerStream injectionHelperPipeStream;
 		IAsyncResult activePipeServer;
 
-		
+		[DllImport("newloaderwin32.dll")]
+		static extern bool Is64Bit(uint ProcessId);
+
+		[DllImport("newloaderwin32.dll", CharSet = CharSet.Unicode)]
+		static extern bool InjectIntoProcess(uint ProcessId, string LibPath);
+
+		[DllImport("newloaderwin32.dll", CharSet = CharSet.Unicode)]
+		static extern string GetErrorMsgW();
 		
 
 		public InjectionService()
@@ -209,24 +217,39 @@ namespace SimpitXInjectionHelperSvc
 
 						}
 					case "InjectIntoProcess":
+						
+						log.WriteEntry("'InjectIntoProcess' command received.", EventLogEntryType.Information);
+
+						//  InjectIntoProcess(DWORD dwProcessId, LPCWSTR lpLibPath)
+						if (commandDetails.Count != 3)
 						{
-							log.WriteEntry("'InjectIntoProcess' command received.", EventLogEntryType.Information);
-
-							//  InjectIntoProcess(DWORD dwProcessId, LPCWSTR lpLibPath)
-							if (commandDetails.Count != 3)
-							{
-								log.WriteEntry("Invalid command number arguments received! (" + commandDetails.Count + ")", EventLogEntryType.Error);
-							}
-							uint dwProcessId = (uint)commandDetails[1];
-							String libPath = (String)commandDetails[2];
-
-							// Call injection method.
-
-
-							// Report the results.
-							log.WriteEntry("InjectIntoProcess " + dwProcessId + " " + libPath, EventLogEntryType.Information);
-							break;
+							throw new Exception("Invalid command number arguments received! (" + commandDetails.Count + ")");
+								
 						}
+						uint dwProcessId = (uint)commandDetails[1];
+						String libPath = (String)commandDetails[2];
+
+						// Ensure target is 32bit.
+						if (Is64Bit(dwProcessId))
+						{
+							log.WriteEntry("Target process " + dwProcessId + " is 64-bit!");
+							throw new Exception("Cannot use this helper on 64-bit processes.");
+						}
+
+						// Call injection method.
+						if (!InjectIntoProcess(dwProcessId, libPath))
+						{
+							// Error encountered
+							log.WriteEntry("InjectIntoProcess " + dwProcessId + ", ' " + libPath + "') failed:\n" + GetErrorMsgW(), EventLogEntryType.FailureAudit);
+
+						}
+						else
+						{
+							// Report the results.
+							log.WriteEntry("InjectIntoProcess(" + dwProcessId + ", '" + libPath + "') successful.", EventLogEntryType.SuccessAudit);
+						}
+						break;
+						
 					default:
 
 						log.WriteEntry("Unknown command received through named-pipe: \'" + commandDetails + "'", EventLogEntryType.Error);
@@ -238,7 +261,7 @@ namespace SimpitXInjectionHelperSvc
 			{
 
 				// Write to the event log
-				log.WriteEntry("Exception: " + ex.Message, EventLogEntryType.FailureAudit);
+				log.WriteEntry("Exception: " + ex.ToString() + "\nSource: " + ex.Source + "\nMessage:" + ex.Message, EventLogEntryType.FailureAudit);
 
 			}
 

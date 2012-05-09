@@ -37,10 +37,15 @@ namespace Monitor_Application
 		public MainDialog()
 		{
 			InitializeComponent();
+
+			log.FileWriter(new FileStream("simpitx.log", FileMode.Truncate, FileAccess.Write));
+			log.ListBoxWriter(logListBox);
+			Console.SetOut(log);
 		}
 
 		SerializableDictionary<String, ProgramConfiguration> ConfiguredPrograms = new SerializableDictionary<String, ProgramConfiguration>();
-		
+
+		LogWriter log = new LogWriter();
 
 		/// <summary>
 		///  Load settings from disk and initialize application.
@@ -50,7 +55,7 @@ namespace Monitor_Application
 		private void MainDialog_Load(object sender, EventArgs e)
 		{
 			// Load values from settings.
-
+			
 
 			try
 			{
