@@ -21,10 +21,10 @@ namespace SimpitXAssist32
 		private NamedPipeServerStream injectionHelperPipeStream;
 		private IAsyncResult activePipeServer;
 
-		[DllImport("newloaderwin32.dll", CharSet = CharSet.Unicode)]
+		[DllImport("newloaderWin32.dll", CharSet = CharSet.Unicode)]
 		private static extern bool InjectIntoProcess(uint ProcessId, string LibPath);
 
-		[DllImport("newloaderwin32.dll", CharSet = CharSet.Unicode)]
+		[DllImport("newloaderWin32.dll", CharSet = CharSet.Unicode)]
 		private static extern string GetErrorMsgW();
 
 		public static bool Is64BitProcess

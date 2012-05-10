@@ -98,6 +98,7 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 	{
 		add_log("---------------------\nD3D9Hook Exiting...\n---------------------\n");
 		if(ofile) { ofile.close(); }
+		return true;
 	}
 
 	return false;

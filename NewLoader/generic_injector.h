@@ -26,7 +26,7 @@
 #include "injector_helper.h"
 
 // INFINITE can cause DeadLock if host process is in debug mode
-#define INJLIB_WAITTIMEOUT		INFINITE
+#define INJLIB_WAITTIMEOUT		5000
 #define WII_WAITTIMEOUT			5000
 
 ////////////////////////////////////////////////////////////////////////////////////////////
