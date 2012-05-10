@@ -37,8 +37,16 @@ namespace Monitor_Application
 		public MainDialog()
 		{
 			InitializeComponent();
-
-			log.FileWriter(new FileStream("simpitx.log", FileMode.Truncate, FileAccess.Write));
+			FileStream stream;
+			if (!File.Exists("simpitx.log"))
+			{
+				stream = File.Create("simpitx.log");
+			}
+			else
+			{
+				stream = new FileStream("simpitx.log", FileMode.Truncate, FileAccess.Write);
+			}
+			log.FileWriter(stream);
 			log.ListBoxWriter(logListBox);
 			Console.SetOut(log);
 		}
@@ -526,7 +534,7 @@ namespace Monitor_Application
 
 			// Shut it down
 			notifyIcon.Visible = false;
-			ProgramInstance.StartInjectionHelperSvc();
+			ProgramInstance.StopInjectionHelperSvc();
 
 
 		}

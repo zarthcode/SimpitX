@@ -40,6 +40,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+	<SGenUseProxyTypes>false</SGenUseProxyTypes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>$(SolutionDir)\Build\$(Configuration)\</OutputPath>
@@ -51,6 +53,8 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+	<SGenUseProxyTypes>false</SGenUseProxyTypes>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -163,10 +167,27 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
+       Other similar extension points exist, see Microsoft.Common.targets. -->
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
+   <!-- Delete the file because I can't figure out how to force the SGen task. -->
+   <Delete
+     Files="$(TargetDir)$(TargetName).XmlSerializers.dll"
+     ContinueOnError="true" />
+   <SGen
+		BuildAssemblyName="$(TargetFileName)"
+		BuildAssemblyPath="$(OutputPath)"
+		References="@(ReferencePath)"
+		ShouldGenerateSerializer="true"
+		UseProxyTypes="false"
+		KeyContainer="$(KeyContainerName)"
+		KeyFile="$(KeyOriginatorFile)"
+		DelaySign="$(DelaySign)"
+		ToolPath="C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin"
+		Platform="$(Platform)">
+			<Output TaskParameter="SerializationAssembly" ItemName="SerializationAssembly" />
+   </SGen>
   </Target>
-  -->
+
 </Project>

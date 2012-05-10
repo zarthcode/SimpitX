@@ -36,7 +36,17 @@ namespace SimpitXAssist32
 
 		public InjectorHelper()
 		{
-			log.SetWriter(new FileStream("SimpitXAssist32.log", FileMode.Truncate, FileAccess.Write));
+
+			FileStream stream;
+			if (!File.Exists("simpitxassist32.log"))
+			{
+				stream = File.Create("simpitxassist32.log");
+			}
+			else
+			{
+				stream = new FileStream("simpitxassist32.log", FileMode.Truncate, FileAccess.Write);
+			}
+			log.SetWriter(stream);
 			Console.SetOut(log);
 
 			if (Is64BitProcess)

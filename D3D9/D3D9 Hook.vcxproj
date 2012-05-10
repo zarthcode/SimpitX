@@ -279,7 +279,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;TATNIUMD3D_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;TATNIUMD3D_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="detours.cpp" />
     <ClCompile Include="main.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
@@ -339,7 +338,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d9.h" />
-    <ClInclude Include="detours.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="d3d9dev.h" />
     <ClInclude Include="d3d9int.h" />

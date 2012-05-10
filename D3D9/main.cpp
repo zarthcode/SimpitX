@@ -53,7 +53,7 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 
 		add_log("\n---------------------\nD3D9Hook Started...\n---------------------");
 
-		MessageBox(NULL, GetDirectoryFile("d3d9hook.log"), "Hook started successfully", MB_OK);
+//		MessageBox(NULL, GetDirectoryFile("d3d9hook.log"), "Hook started successfully", MB_OK);
 
 		char sysd3d[320];
 		GetSystemDirectory(sysd3d, 320);
