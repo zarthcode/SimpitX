@@ -23,7 +23,7 @@ HRESULT CD3DManager::PreReset()
 	/*
 	release all UNMANAGED [D3DPOOL_DEFAULT] 
 	textures, vertex buffers, and other 
-	volitile resources
+	volatile resources
 	...
 	_SAFE_RELEASE(m_pD3Dtexture);
 	*/
@@ -123,6 +123,7 @@ HRESULT APIENTRY hkIDirect3DDevice9::CreateQuery(D3DQUERYTYPE Type,IDirect3DQuer
 
 HRESULT APIENTRY hkIDirect3DDevice9::CreateRenderTarget(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Lockable,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle) 
 {
+	add_log("CreateRenderTarget(%lu, %lu, %i, %i, %lu, %i, ppSurface, pSharedHandle);", Width, Height, Format, MultiSample, MultisampleQuality, Lockable);
 	return m_pD3Ddev->CreateRenderTarget(Width, Height, Format, MultiSample,MultisampleQuality, Lockable, ppSurface,pSharedHandle);
 }
 
@@ -136,11 +137,11 @@ HRESULT APIENTRY hkIDirect3DDevice9::CreateTexture(UINT Width,UINT Height,UINT L
 	HRESULT ret = m_pD3Ddev->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
 
 #ifdef D3DHOOK_TEXTURES
-	if(ret == D3D_OK) {  
-		hkIDirect3DTexture9* texturenew =  new hkIDirect3DTexture9(ppTexture, m_pD3Ddev, Width, Height, Format);  
-		*ppTexture = texturenew; 
+	if(ret == D3D_OK)
+	{
+		hkIDirect3DTexture9* texturenew =  new hkIDirect3DTexture9(ppTexture, m_pD3Ddev, Width, Height, Format);
+		*ppTexture = texturenew;
 	} 
-	return ret; 
 #endif
 
 	return ret;
@@ -574,6 +575,7 @@ HRESULT APIENTRY hkIDirect3DDevice9::SetRenderState(D3DRENDERSTATETYPE State, DW
 
 HRESULT APIENTRY hkIDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) 
 {
+	add_log("SetRenderTarget(%lu, %lu);", RenderTargetIndex, QuickChecksum((DWORD*) pRenderTarget, sizeof(IDirect3DSurface9)));
 	return m_pD3Ddev->SetRenderTarget(RenderTargetIndex,pRenderTarget);
 }
 
@@ -608,7 +610,7 @@ HRESULT APIENTRY hkIDirect3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTextur
 	IDirect3DDevice9 *dev = NULL;
 	if(pTexture != NULL && ((hkIDirect3DTexture9*)(pTexture))->GetDevice(&dev) == D3D_OK) 
 	{ 
-		if(dev == m_pD3Ddev) { 
+		if(dev == m_pD3Ddev)
 			return m_pD3Ddev->SetTexture(Stage, ((hkIDirect3DTexture9*)(pTexture))->m_D3Dtex); 
 	}
 #endif

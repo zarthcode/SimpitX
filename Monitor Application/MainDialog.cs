@@ -100,6 +100,8 @@ namespace Monitor_Application
 			UpdateProgramComboList();
 			UpdatePluginList();
 
+			// Restore icon?
+
 			// Start monitoring programs
 			StartMonitoring();
 
