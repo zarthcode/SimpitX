@@ -36,7 +36,7 @@ namespace SimpitXAssist32
 
 		public InjectorHelper()
 		{
-
+#if DEBUG
 			FileStream stream;
 			if (!File.Exists("simpitxassist32.log"))
 			{
@@ -48,7 +48,7 @@ namespace SimpitXAssist32
 			}
 			log.SetWriter(stream);
 			Console.SetOut(log);
-
+#endif
 			if (Is64BitProcess)
 			{
 				// Not cool!

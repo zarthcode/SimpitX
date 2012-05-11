@@ -37,6 +37,8 @@ namespace Monitor_Application
 		public MainDialog()
 		{
 			InitializeComponent();
+			
+#if DEBUG
 			FileStream stream;
 			if (!File.Exists("simpitx.log"))
 			{
@@ -47,6 +49,8 @@ namespace Monitor_Application
 				stream = new FileStream("simpitx.log", FileMode.Truncate, FileAccess.Write);
 			}
 			log.FileWriter(stream);
+
+#endif
 			log.ListBoxWriter(logListBox);
 			Console.SetOut(log);
 		}
@@ -270,10 +274,7 @@ namespace Monitor_Application
 		public void ProcessCreatedEventHandler(ProgramConfiguration program, WMI.Win32.Win32_Process proc)
 		{
 			// Output some console info.
-			Console.WriteLine("Process Created:");
-			Console.WriteLine("Name:" + proc.Name);
-			Console.WriteLine("Path:" + proc.ExecutablePath);
-			Console.WriteLine("ProcessId: " + proc.ProcessId);
+			Console.WriteLine("Process Detected(" + proc.Name + ")\n" + proc.ExecutablePath + "\nProcessId: " + proc.ProcessId);
 
 
 			// Minimize and enter "active" mode.
@@ -296,7 +297,7 @@ namespace Monitor_Application
 		public void ProcessDeletedEventHandler(ProgramConfiguration program, WMI.Win32.Win32_Process proc)
 		{
 			// Output some console info.
-			Console.WriteLine("Process deleted for program:" + program.SettingsDictionary["Info"]["Program Name"]);
+			Console.WriteLine("Program Stopped:" + program.SettingsDictionary["Info"]["Program Name"]);
 			
 			// Restore window settings.
 

@@ -136,7 +136,11 @@ HRESULT APIENTRY hkIDirect3DDevice9::CreateTexture(UINT Width,UINT Height,UINT L
 	HRESULT ret = m_pD3Ddev->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
 
 #ifdef D3DHOOK_TEXTURES
-	if(ret == D3D_OK) { new hkIDirect3DTexture9(ppTexture, this, Width, Height, Format); }
+	if(ret == D3D_OK) {  
+		hkIDirect3DTexture9* texturenew =  new hkIDirect3DTexture9(ppTexture, m_pD3Ddev, Width, Height, Format);  
+		*ppTexture = texturenew; 
+	} 
+	return ret; 
 #endif
 
 	return ret;
@@ -602,10 +606,10 @@ HRESULT APIENTRY hkIDirect3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTextur
 {
 #ifdef D3DHOOK_TEXTURES
 	IDirect3DDevice9 *dev = NULL;
-	if(pTexture != NULL && ((hkIDirect3DTexture9*)(pTexture))->GetDevice(&dev) == D3D_OK)
-	{
-		if(dev == this)
-			return m_pD3Ddev->SetTexture(Stage, ((hkIDirect3DTexture9*)(pTexture))->m_D3Dtex);
+	if(pTexture != NULL && ((hkIDirect3DTexture9*)(pTexture))->GetDevice(&dev) == D3D_OK) 
+	{ 
+		if(dev == m_pD3Ddev) { 
+			return m_pD3Ddev->SetTexture(Stage, ((hkIDirect3DTexture9*)(pTexture))->m_D3Dtex); 
 	}
 #endif
 	
