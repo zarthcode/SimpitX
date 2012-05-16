@@ -65,6 +65,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Zarthcode.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -138,6 +141,7 @@
     <None Include="StrongName.snk" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Zarthcode.ico" />
     <None Include="Resources\Fist - 64.png" />
     <Content Include="Resources\fist.png" />
     <None Include="Resources\FistLogo.bmp" />

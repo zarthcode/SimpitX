@@ -449,6 +449,7 @@
 			// 
 			this.programComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.programComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.programComboBox.FormattingEnabled = true;
 			this.programComboBox.Location = new System.Drawing.Point(3, 3);
 			this.programComboBox.Name = "programComboBox";

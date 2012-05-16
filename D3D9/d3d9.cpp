@@ -1,14 +1,17 @@
 #include <windows.h>
 
 #include "d3d9.h"
-#include "main.h"
-
-tDirect3DCreate9 oDirect3DCreate9;
+#include "HookManager.h"
+#include "misc.h"
 
 IDirect3D9 *APIENTRY hkDirect3DCreate9(UINT SDKVersion)
 {
+	// Obtain the original function pointer upon first run.
+	static tDirect3DCreate9 oDirect3DCreate9 = D3DHookMgr::GetSingleton()->GetFunction<tDirect3DCreate9>("Direct3DCreate9");
+
 	add_log("Create Device Started...");
 	add_log("\tCalling oDirect3DCreate9(%u)...", SDKVersion);
+	
 	IDirect3D9 *d3dint = oDirect3DCreate9(SDKVersion);
 	add_log("...Device created successfully!");
 

@@ -1,5 +1,4 @@
-/*
-	Project : Direct3D StarterKit v3.0
+/*	Project : Direct3D StarterKit v3.0
 	Author	: Matthew L (Azorbix)
 	Date	: June 10th, 2005
 
@@ -35,69 +34,58 @@ using namespace std;
 #include "main.h"
 #include "d3d9.h"
 #include "MinHook.h"
+#include "misc.h"
+#include "HookManager.h"
+#include "MFCDX.h"
 
-//Globals
-ofstream ofile;	
-char dlldir[320];
+
+// Globals
+
+
 
 bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 {
 
 	if(dwReason == DLL_PROCESS_ATTACH)
 	{
+		char dlldir[320];
+
 		DisableThreadLibraryCalls(hDll);
 
 		GetModuleFileName(hDll, dlldir, 512);
 		for(int i = strlen(dlldir); i > 0; i--) { if(dlldir[i] == '\\') { dlldir[i+1] = 0; break; } }
-		ofile.open(GetDirectoryFile("d3d9hook.log"), ios::trunc);
-
-		add_log("\n---------------------\nD3D9Hook Started...\n---------------------");
-
-//		MessageBox(NULL, GetDirectoryFile("d3d9hook.log"), "Hook started successfully", MB_OK);
-
-		char sysd3d[320];
-		GetSystemDirectory(sysd3d, 320);
-		strcat(sysd3d, "\\d3d9.dll");
-
-		add_log("LoadLibrary(\"%s\")", sysd3d);
-		HMODULE hMod = LoadLibrary(sysd3d);	
-		add_log("\t...result 0x%x", hMod);
-
-		add_log("Registering D3D9 Detour.");
 		
+		open_log(dlldir);
+		add_log("Log Ready");
 		
+		add_log("SimpitX™ - D3D9 Hook - ©2012, ZarthCode LLC");
 		
-		// oDirect3DCreate9 = (tDirect3DCreate9)DETOUR(GetProcAddress(hMod, "Direct3DCreate9"),	hkDirect3DCreate9, 5);
-		// Initialize MinHook.
-		if (MH_Initialize() != MH_OK)
-		{
-			add_log("MinHook Init failed.");
-			return false;
-		}
 
-		// Create a hook for MessageBoxW, in disabled state.
-		if (MH_CreateHook(GetProcAddress(hMod, "Direct3DCreate9"), hkDirect3DCreate9, 
-			reinterpret_cast<void**>(&oDirect3DCreate9)) != MH_OK)
+		// Create hooks
+		try
 		{
-			add_log("MinHook Create failed.");
-			return false;
+			D3DHookMgr::GetSingleton()->HookD3D9();
 		}
-
-		// Enable the hook for MessageBoxW.
-		if (MH_EnableHook(GetProcAddress(hMod, "Direct3DCreate9")) != MH_OK)
+		catch (std::exception ex)
 		{
-			add_log("MinHook Enable failed.");
-			return false;
+			add_log("Exception thrown during D3DHookMgr::GetSingleton()->HookD3D9()");
+			add_log(ex.what());
 		}
-
-		add_log("Detour created (0x%x)", oDirect3DCreate9);
+		add_log("Exiting DllMain.");
+		
 		return true;
 	}
 
 	else if(dwReason == DLL_PROCESS_DETACH)
 	{
-		add_log("---------------------\nD3D9Hook Exiting...\n---------------------\n");
-		if(ofile) { ofile.close(); }
+		add_log("SimpitX™ D3D9Hook Detaching");
+
+
+		add_log("%lu unique surfaces.", MFCDX::s_RenderSurfaces.size());
+		add_log("%lu interesting textures.", MFCDX::s_RenderTextures.size());
+		add_log("Current call (#%lu) %s", callID(), callInfo());
+
+		close_log();
 		return true;
 	}
 
@@ -105,31 +93,6 @@ bool WINAPI DllMain(HMODULE hDll, DWORD dwReason, PVOID pvReserved)
 }
 
 
-char *GetDirectoryFile(char *filename)
-{
-	static char path[320];
-	strcpy(path, dlldir);
-	strcat(path, filename);
-	return path;
-}
 
-void __cdecl add_log (const char *fmt, ...)
-{
-	if(ofile != NULL)
-	{
-		if(!fmt) { return; }
 
-		char buff[20];
-		time_t now = time(NULL);
-		strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
 
-		va_list va_alist;
-		char logbuf[256] = {0};
-
-		va_start (va_alist, fmt);
-		_vsnprintf (logbuf+strlen(logbuf), sizeof(logbuf) - strlen(logbuf), fmt, va_alist);
-		va_end (va_alist);
-
-		ofile << buff << " - " << logbuf << endl;
-	}
-}

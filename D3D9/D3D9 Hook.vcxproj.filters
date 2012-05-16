@@ -36,6 +36,18 @@
     <ClCompile Include="d3d9tex.cpp">
       <Filter>Source Files\d3d9_c</Filter>
     </ClCompile>
+    <ClCompile Include="HookManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MFCDX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d9debugutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d9.h">
@@ -52,6 +64,18 @@
     </ClInclude>
     <ClInclude Include="d3d9tex.h">
       <Filter>Header Files\d3d9_h</Filter>
+    </ClInclude>
+    <ClInclude Include="HookManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MFCDX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d9debugutils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

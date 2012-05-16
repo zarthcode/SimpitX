@@ -5,6 +5,9 @@ namespace SimpitXAssist32
 {
 	static class Program
 	{
+
+		static InjectorHelper injectorHelper;
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
@@ -26,18 +29,23 @@ namespace SimpitXAssist32
 			ContextMenu contextMenu = new ContextMenu();
 
 			MenuItem menuItem = new MenuItem();
-			contextMenu.MenuItems.AddRange(new MenuItem[] { menuItem });
+			MenuItem menuItem2 = new MenuItem();
+			contextMenu.MenuItems.AddRange(new MenuItem[] { menuItem, menuItem2 });
 
 			menuItem.Index = 0;
 			menuItem.Text = "A&bout";
 			menuItem.Click += new EventHandler(menuItem_Click);
+
+			menuItem2.Index = 1;
+			menuItem2.Text = "Ex&it";
+			menuItem2.Click += new EventHandler(exitMenuItem_Click);
 
 			notifyIcon.ContextMenu = contextMenu;
 			notifyIcon.Visible = true;
 
 		// Start the helper
 
-			InjectorHelper injectorHelper = new InjectorHelper();	// RAII FTW
+			injectorHelper = new InjectorHelper();	// RAII FTW
 
 		
 			Application.Run();
@@ -45,6 +53,15 @@ namespace SimpitXAssist32
 		// Shutting down.
 			injectorHelper.Stop();
 			notifyIcon.Visible = false;
+		}
+		
+		static void exitMenuItem_Click(object sender, EventArgs e)
+		{
+			if (injectorHelper != null)
+			{
+				injectorHelper.Stop();
+			}
+			Application.Exit();
 		}
 
 		static void menuItem_Click(object sender, EventArgs e)

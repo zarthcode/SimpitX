@@ -1,7 +1,7 @@
 /*	Direct3D9 Interface */
 
 #include <windows.h>
-#include "main.h"
+#include "misc.h"
 #include "d3d9.h"
 
 HRESULT APIENTRY hkIDirect3D9::QueryInterface(REFIID riid,  void **ppvObj)
