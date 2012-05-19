@@ -12,33 +12,12 @@ interface hkIDirect3DTexture9 : public IDirect3DTexture9
 	static hkIDirect3DTexture9* FindTextureObj(IDirect3DTexture9 *ppTex);
 	static hkIDirect3DTexture9* FindTextureObj(IDirect3DBaseTexture9 *ppBaseTex);
 
-	// Returns a pointer to 
-
+	// Returns a pointer to a new object.
+	static hkIDirect3DTexture9* Factory(IDirect3DTexture9 **ppTex, IDirect3DDevice9 *pIDirect3DDevice9, UINT Width, UINT Height, D3DFORMAT Format);
 
 	// Stores a reference to each texture object.
 	static std::map<IDirect3DBaseTexture9*, hkIDirect3DTexture9*> s_TextureObjects;
 	static std::set<hkIDirect3DTexture9*> s_TextureSet;
-
-	hkIDirect3DTexture9(IDirect3DTexture9 **ppTex, IDirect3DDevice9 *pIDirect3DDevice9, UINT Width, UINT Height, D3DFORMAT Format)
-	{
-
-		m_D3Dtex = *ppTex;
-		m_D3Ddev = pIDirect3DDevice9;
-		m_Width = Width;
-		m_Height = Height;
-		m_Format = Format;
-
-		// Store a reference to this object.
-		s_TextureObjects.insert(std::make_pair(m_D3Dtex, this));
-		s_TextureSet.insert(this);
-
-	}
-
-	virtual ~hkIDirect3DTexture9()
-	{
-		s_TextureObjects.erase(m_D3Dtex);
-		s_TextureSet.erase(this);
-	}
 
 	UINT m_Width, m_Height;
 	D3DFORMAT m_Format;
@@ -46,7 +25,7 @@ interface hkIDirect3DTexture9 : public IDirect3DTexture9
 	// callback interface
 	IDirect3DTexture9 *m_D3Dtex;
 	IDirect3DDevice9 *m_D3Ddev;
-
+	
 	// original interface
 	STDMETHOD(QueryInterface)(REFIID riid, void** ppvObj);
 	STDMETHOD_(ULONG,AddRef)();
@@ -70,6 +49,31 @@ interface hkIDirect3DTexture9 : public IDirect3DTexture9
 	STDMETHOD(LockRect)(UINT Level,D3DLOCKED_RECT* pLockedRect,CONST RECT* pRect,DWORD Flags);
 	STDMETHOD(UnlockRect)(UINT Level);
 	STDMETHOD(AddDirtyRect)(CONST RECT* pDirtyRect);
+
+private:
+
+	hkIDirect3DTexture9(IDirect3DTexture9 **ppTex, IDirect3DDevice9 *pIDirect3DDevice9, UINT Width, UINT Height, D3DFORMAT Format)
+	{
+
+		m_D3Dtex = *ppTex;
+		m_D3Ddev = pIDirect3DDevice9;
+		m_Width = Width;
+		m_Height = Height;
+		m_Format = Format;
+
+		// Store a reference to this object.
+		s_TextureObjects.insert(std::make_pair(m_D3Dtex, this));
+		s_TextureSet.insert(this);
+
+	}
+
+	// Private, due to the ability to commit suicide.
+	virtual ~hkIDirect3DTexture9()
+	{
+		s_TextureObjects.erase(m_D3Dtex);
+		s_TextureSet.erase(this);
+	}
+
 };
 
 #endif

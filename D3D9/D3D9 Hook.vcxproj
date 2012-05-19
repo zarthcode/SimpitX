@@ -359,6 +359,7 @@
     <None Include="d3d9hook.plugin.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

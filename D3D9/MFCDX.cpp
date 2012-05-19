@@ -1,13 +1,15 @@
 #include "MFCDX.h"
 #include "misc.h"
+#include "d3d9tex.h"
 #include <d3dx9tex.h>
 #include <sstream>
 #include <map>
+#include <boost/utility.hpp>
 
 #pragma comment(lib,"D3dx9.lib")
 
 std::set<IDirect3DSurface9*> MFCDX::s_RenderSurfaces;
-std::set<IDirect3DBaseTexture9*> MFCDX::s_RenderTextures;
+std::set<hkIDirect3DTexture9*> MFCDX::s_RenderTextures;
 
 
 void MFCDX::saveSurfaceToDisk( IDirect3DSurface9* pSurfaceOfInterest )
@@ -43,7 +45,7 @@ void MFCDX::saveSurfaceToDisk( IDirect3DSurface9* pSurfaceOfInterest )
 }
 
 
-void MFCDX::saveTextureToDisk( IDirect3DBaseTexture9* pTextureOfInterest )
+bool MFCDX::saveTextureToDisk( IDirect3DBaseTexture9* pTextureOfInterest )
 {
 	static std::map<IDirect3DBaseTexture9*, unsigned int>s_Counters;
 
@@ -67,11 +69,11 @@ void MFCDX::saveTextureToDisk( IDirect3DBaseTexture9* pTextureOfInterest )
 	if (result != D3D_OK)
 	{
 		add_log("\tSave failed.");
+		return false;
 	}
-	else
-	{
-		add_log("\tSave Successful");
-	}
+	
+	add_log("\tSave Successful");
+	return true;
 
 }
 
@@ -101,22 +103,168 @@ void MFCDX::pollSurfaces()
 void MFCDX::pollTextures()
 {
 	static int iFrameCount = 0;
+	static bool bInitFlag = false;
 
-	if (iFrameCount++ < 40)
+	if (iFrameCount++ < PollingSpeed)
 	{
 		return;
 	}
+
+	if(!bInitFlag)
+	{
+		bInitFlag = true;
+		bEnable = false;
+		PollingSpeed = 200;
+		add_log("reinit left mfcd.");
+		itLeftMFCD = s_RenderTextures.begin();
+	}
+
+	if(!bEnable)
+		return;
 
 	iFrameCount = 0;
-	std::set<IDirect3DBaseTexture9*>::iterator itRenderTextures = s_RenderTextures.begin();
-
-	for (;itRenderTextures != s_RenderTextures.end(); itRenderTextures++)
+	
+	// Save the texture
+	if (itLeftMFCD != s_RenderTextures.end())
 	{
+		add_log("attempting save.");
+		if(!saveTextureToDisk((IDirect3DBaseTexture9*)((*itLeftMFCD)->m_D3Dtex)))
+		{
+			itLeftMFCD = s_RenderTextures.erase(itLeftMFCD);
+		}
 
-		saveTextureToDisk(*itRenderTextures);
-		s_RenderTextures.erase(*itRenderTextures);
-		return;
-
+		add_log("successful.");
 	}
 
+	return;
+
 }
+
+void MFCDX::OnEndScene()
+{
+
+	static int lockOut[] = {0,0,0,0};
+
+#define lockOutPeriod 75;
+
+	// Key-repeating functionality.
+	for (int i = 0; i < 4; i++)
+	{
+		if (lockOut[i] > 0)
+		{
+			lockOut[i]--;
+		}
+	}
+
+	// Look for pressed keys
+	if(GetAsyncKeyState(VK_OEM_4) & 0x8000)	// '[{' key
+	{
+		// Left MFCD
+		if ((GetAsyncKeyState(VK_SHIFT) & 0x8000) && (lockOut[0] == 0))
+		{
+			detail_log("Left MFCD Increment");
+			LeftMFCD();
+			lockOut[0] = lockOutPeriod;
+			lockOut[1] = lockOutPeriod;	// Slave buttons
+
+		}
+		else if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (lockOut[0] == 0))
+		{
+			detail_log("MFCD Swap");
+			SwapMFCDs();
+			lockOut[0] =  lockOutPeriod;
+			lockOut[0] *= 5;
+			lockOut[1] = lockOut[0];	// Slave buttons
+		}
+		else if (lockOut[1] == 0)
+		{
+			detail_log("Left MFCD Decrement");
+			LeftMFCD(false);
+			lockOut[1] = lockOutPeriod;
+			lockOut[0] = lockOutPeriod;
+		}
+
+
+
+	}
+	else
+	{
+		lockOut[0] = lockOut[1] = 0;
+	}
+
+	if(GetAsyncKeyState(VK_OEM_6) & 0x8000) // ']}' key
+	{
+		// Next Right MFCD
+		if ((GetAsyncKeyState(VK_SHIFT) & 0x8000) && (lockOut[2] == 0))
+		{
+			detail_log("Right MFCD Increment");
+			RightMFCD();
+			lockOut[2] = lockOutPeriod;
+			lockOut[3] = lockOutPeriod; // Slave buttons
+		}
+		else if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (lockOut[2] == 0))
+		{
+			detail_log("MFCD Swap");
+			SwapMFCDs();
+			lockOut[2] = lockOutPeriod;
+			lockOut[2] *= 5;
+			lockOut[3] = lockOut[2];	// Slave buttons
+		}
+		else if (lockOut[3] == 0)
+		{
+			detail_log("Right MFCD Decrement");
+			RightMFCD(false);
+			lockOut[3] = lockOutPeriod;
+			lockOut[2] = lockOutPeriod; // Slave buttons
+		}
+	}
+	else
+	{
+		lockOut[2] = lockOut[3] = 0;
+	}
+	
+	pollTextures();
+
+}
+
+void MFCDX::LeftMFCD( bool increment /*= true*/ )
+{
+	if (increment)
+	{
+
+		if(!is_last(itLeftMFCD,s_RenderTextures))
+		{
+			itLeftMFCD++;
+		}
+	}	
+	else
+	{
+		if(itLeftMFCD != s_RenderTextures.begin())
+		{
+			itLeftMFCD--;
+		}
+	}
+}
+
+void MFCDX::RightMFCD( bool increment /*= true*/ )
+{
+	if(increment)
+	{
+		PollingSpeed += 15;
+	}
+	else
+	{
+		PollingSpeed -= 15;
+	}
+}
+
+void MFCDX::SwapMFCDs()
+{
+	bEnable = !bEnable;
+}
+
+int MFCDX::PollingSpeed;
+
+bool MFCDX::bEnable;
+
+std::set<hkIDirect3DTexture9*>::iterator MFCDX::itLeftMFCD;

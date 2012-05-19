@@ -1,0 +1,15 @@
+1. Rudimentary texture logging to disk. (done: ImageMonitor)
+	Checkin
+2. Dual texture logging to disk. (skip)
+6. Threading/Shared memory
+7. Local display client (embedded/directx)
+4. Test for robustness, speed.
+5. Configuration/setup routines
+8. Networking/TCPIP
+9. Remote display client (standalone)
+3. Extensible texture export.
+	LMFCD, RMFCD, RWR, CDU
+	Possible direct export of gauges/displays.
+
+10. Custom export API.
+

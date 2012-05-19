@@ -80,5 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="d3d9hook.plugin.xml" />
+    <None Include="TODO.txt" />
   </ItemGroup>
 </Project>

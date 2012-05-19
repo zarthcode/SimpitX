@@ -3,6 +3,7 @@
 
 #include "d3d9.h"
 
+
 #define _SAFE_RELEASE(p) if(p) { p->Release; p = NULL; }
 interface hkIDirect3DDevice9;
 class CD3DManager
@@ -13,6 +14,7 @@ public:
 		m_pParent = pParent;
 		m_pD3Ddev = pD3Ddev;
 	}
+
 	~CD3DManager() {}
 
 	HRESULT Initialize();
@@ -20,6 +22,7 @@ public:
 	HRESULT PostReset();
 	HRESULT Release();
 
+	HRESULT OnEndFrame();
 	//put resources here
 	//IDirect3DTexture9 *m_pD3Dtexture;
 
@@ -27,9 +30,7 @@ public:
 
 private:
 
-	hkIDirect3DTexture9 m_LeftMFCD;
-	hkIDirect3DTexture9 m_RightMFCD;
-
+	void* m_Plugin;
 	hkIDirect3DDevice9	*m_pParent;
 	IDirect3DDevice9	*m_pD3Ddev;	
 };

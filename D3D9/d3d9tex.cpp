@@ -23,7 +23,22 @@ ULONG APIENTRY hkIDirect3DTexture9::Release()
 {
 	INC_CALL_LOG();
 
-	return m_D3Dtex->Release();
+	// this texture is no longer interesting if the refcount is zero.
+	ULONG refcount = m_D3Dtex->Release();
+
+	// When you're rejected...
+	if (refcount == 0)
+	{
+		
+		// and forgotten...
+		s_TextureObjects.erase(m_D3Dtex);
+		s_TextureSet.erase(this);
+		
+		// ...Try Seppuku! it's the only way!
+		delete this;
+	}
+
+	return refcount;
 }
 
 HRESULT APIENTRY hkIDirect3DTexture9::GetDevice(IDirect3DDevice9** ppDevice)
@@ -194,6 +209,11 @@ hkIDirect3DTexture9* hkIDirect3DTexture9::FindTextureObj( IDirect3DBaseTexture9 
 	}
 
 	return *itTextureObj;
+}
+
+hkIDirect3DTexture9* hkIDirect3DTexture9::Factory( IDirect3DTexture9 **ppTex, IDirect3DDevice9 *pIDirect3DDevice9, UINT Width, UINT Height, D3DFORMAT Format )
+{
+	return new hkIDirect3DTexture9( ppTex, pIDirect3DDevice9, Width, Height, Format );
 }
 
 std::set<hkIDirect3DTexture9*> hkIDirect3DTexture9::s_TextureSet;

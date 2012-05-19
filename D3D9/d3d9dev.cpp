@@ -17,6 +17,9 @@ HRESULT CD3DManager::Initialize()
 	...
 	m_pD3Ddev->CreateTexture(..., ..., &m_pD3Dtexture);
 	*/
+	MFCDX* Plugin = new MFCDX();
+	m_Plugin = reinterpret_cast<void*>(Plugin);
+
 	return S_OK;
 }
 
@@ -52,7 +55,20 @@ HRESULT CD3DManager::Release()
 	...
 	_SAFE_RELEASE(m_pD3Dtexture);
 	*/
+	delete reinterpret_cast<MFCDX*>(m_Plugin);
+
 	return S_OK;
+}
+
+HRESULT CD3DManager::OnEndFrame()
+{
+	// Call per frame operations
+	if (m_Plugin != nullptr)
+	{
+		reinterpret_cast<MFCDX*>(m_Plugin)->OnEndScene();
+	}
+
+	return D3D_OK;
 }
 
 //-----------------------------------------------------------------------------
@@ -371,13 +387,18 @@ HRESULT APIENTRY hkIDirect3DDevice9::CreateTexture(UINT Width,UINT Height,UINT L
 		if(Usage & D3DUSAGE_RENDERTARGET)
 		{
 			detail_log("CreateTexture(UINT Width = %lu,\nUINT Height = %lu,\nUINT Levels = %lu,\nDWORD Usage = %s,\nD3DFORMAT Format = %s,\nD3DPOOL Pool = %s, \nIDirect3DTexture9** ppTexture = 0x%x, \nHANDLE* pSharedHandle = 0x%x) ", Width, Height, Levels, D3DUSAGEToString(Usage).c_str(), ToString(Format).c_str(), ToString(Pool).c_str(), ppTexture, pSharedHandle);
-			// Squirrel away some interest in this one.			
-			MFCDX::s_RenderTextures.insert(*ppTexture);
+			
 		
 #ifdef D3DHOOK_TEXTURES
-			hkIDirect3DTexture9* texturenew =  new hkIDirect3DTexture9(ppTexture, m_pD3Ddev, Width, Height, Format);
+
+			hkIDirect3DTexture9* texturenew =  hkIDirect3DTexture9::Factory(ppTexture, m_pD3Ddev, Width, Height, Format);
 			*ppTexture = (IDirect3DTexture9*)texturenew;
+
 #endif
+
+			// Squirrel away some interest in this one.			
+			MFCDX::s_RenderTextures.insert(texturenew);
+
 		}
 		
 	}
@@ -555,70 +576,18 @@ HRESULT APIENTRY hkIDirect3DDevice9::DrawTriPatch(UINT Handle, CONST float *pNum
 HRESULT APIENTRY hkIDirect3DDevice9::EndScene()
 {
 	INC_CALL_LOG();
-	static int lockOut[] = {0,0,0,0};
-#define lockOutPeriod 150;
-	for (int i = 0; i < 4; i++)
-	{
-		if (lockOut[i] > 0)
-		{
-			lockOut[i]--;
-		}
-	}
+
+	
 
 	HRESULT result = m_pD3Ddev->EndScene();
 
 	if (result == D3D_OK)
 	{
-		if(GetAsyncKeyState(VK_OEM_4) & 0x8000)	// '[{' key
-		{
-			// Left MFCD
-			if ((GetAsyncKeyState(VK_SHIFT) & 0x8000) && (lockOut[0] == 0))
-			{
-				detail_log("Left MFCD Increment");
-				lockOut[0] = lockOutPeriod;
-				
-				lockOut[1] = lockOutPeriod;	// Slave buttons
-			}
-			else if (lockOut[1] == 0)
-			{
-				detail_log("Left MFCD Decrement");
-				lockOut[1] = lockOutPeriod;
-				lockOut[0] = lockOutPeriod;
-			}
-
-			
-			
-		}
-		else
-		{
-			lockOut[0] = lockOut[1] = 0;
-		}
-
-		if(GetAsyncKeyState(VK_OEM_6) & 0x8000) // ']}' key
-		{
-			// Next Right MFCD
-			if ((GetAsyncKeyState(VK_SHIFT) & 0x8000) && (lockOut[2] == 0))
-			{
-				detail_log("Right MFCD Increment");
-				lockOut[2] = lockOutPeriod;
-				lockOut[3] = lockOutPeriod; // Slave buttons
-			}
-			else if (lockOut[3] == 0)
-			{
-				detail_log("Right MFCD Decrement");
-				lockOut[3] = lockOutPeriod;
-				lockOut[2] = lockOutPeriod; // Slave buttons
-			}
-		}
-		else
-		{
-			lockOut[2] = lockOut[3] = 0;
-		}
-
+		
+		m_pManager->OnEndFrame();
 		
 	}
 
-	//	MFCDX::pollSurfaces();
 
 // Squelched - ED is...a bit naughty. -Zarthrag
 // 	RESULT_LOG();
