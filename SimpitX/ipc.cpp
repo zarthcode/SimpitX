@@ -25,13 +25,20 @@ IPC::Server::~Server(void)
 	close();
 };
 
-void IPC::Server::create( std::string connectionName )
+void IPC::Server::create( const std::string connectionName )
 {
 	// Determine the name of the memory and event objects
-	m_sAddr = connectionName.append("_IPC");
-	std::string m_sEvtAvail = connectionName.append("_evtAvail");
-	std::string m_sEvtFilled = connectionName.append("_evtFilled");
-	std::string m_sMemName = connectionName.append("_sharedMem");
+	m_sAddr = connectionName;
+	m_sAddr += "_IPC";
+	
+	std::string m_sEvtAvail = connectionName;
+	m_sEvtAvail += "_evtAvail";
+
+	std::string m_sEvtFilled = connectionName;
+	m_sEvtFilled += "_evtFilled";
+
+	std::string m_sMemName = connectionName;
+	m_sMemName += "_sharedMem";
 
 	// Create the events
 	m_hSignal = CreateEventA(NULL, FALSE, FALSE, m_sEvtFilled.c_str());
@@ -203,10 +210,18 @@ IPC::Client::Client( std::string connectionName )
 	m_pBuf = NULL;
 
 	// Determine the name of the memory and event objects
-	m_sAddr = connectionName.append("_IPC");
-	std::string m_sEvtAvail = connectionName.append("_evtAvail");
-	std::string m_sEvtFilled = connectionName.append("_evtFilled");
-	std::string m_sMemName = connectionName.append("_sharedMem");
+	m_sAddr = connectionName;
+	m_sAddr += "_IPC";
+
+	std::string m_sEvtAvail = connectionName;
+	m_sEvtAvail += "_evtAvail";
+
+	std::string m_sEvtFilled = connectionName;
+	m_sEvtFilled += "_evtFilled";
+
+	std::string m_sMemName = connectionName;
+	m_sMemName += "_sharedMem";
+
 
 	// Create the events
 	m_hSignal = CreateEventA(NULL, FALSE, FALSE, m_sEvtFilled.c_str());

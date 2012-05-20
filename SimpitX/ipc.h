@@ -84,7 +84,7 @@ public:
 		void					retBlock(Block* pBlock);
 
 		// Create and destroy functions
-		void create(std::string connectionName);
+		void create(const std::string connectionName);
 		void					close(void);
 
 	protected:
