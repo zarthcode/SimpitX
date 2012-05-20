@@ -27,12 +27,21 @@
     <ClInclude Include="pointerconverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ipc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpitX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

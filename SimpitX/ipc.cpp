@@ -1,6 +1,10 @@
 #include "StdAfx.h"
-#include "helper.h"
+#include "pointerconverter.h"
+#include "misc.h"
 #include "ipc.h"
+
+
+
 
 IPC::Server::Server(void)
 {
@@ -9,69 +13,56 @@ IPC::Server::Server(void)
 	m_hSignal = 0;
 	m_hAvail = 0;
 	m_pBuf = NULL;
-	m_sAddr = NULL;
 
-	// create the server
-	create();
+
 };
 
 IPC::Server::~Server(void)
 {
-	// Free memory
-	if (m_sAddr) {
-		free(m_sAddr);
-		m_sAddr = NULL;
-	}
+
 
 	// Close the server
 	close();
 };
 
-void IPC::Server::create(void)
+void IPC::Server::create( std::string connectionName )
 {
-	// Determine the name of the memory
-	DWORD ProcessID = GetCurrentProcessId();
-	DWORD ThreadID = GetCurrentThreadId();
-	DWORD ServerID = IPC::GetID();
-
-	m_sAddr = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sAddr) return;
-	sprintf_s(m_sAddr, IPC_MAX_ADDR, "IPC_%04u_%04u_%04u", ProcessID, ThreadID, ServerID);
-
-	char *m_sEvtAvail = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sEvtAvail) { printf("server_create: failed: %01d\n", __LINE__); return; }
-	sprintf_s(m_sEvtAvail, IPC_MAX_ADDR, "%s_evt_avail", m_sAddr);
-
-	char *m_sEvtFilled = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sEvtFilled) { free(m_sEvtAvail); printf("server_create: failed: %01d\n", __LINE__); return; }
-	sprintf_s(m_sEvtFilled, IPC_MAX_ADDR, "%s_evt_filled", m_sAddr);
-
-	char *m_sMemName = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sMemName) { free(m_sEvtAvail); free(m_sEvtFilled); printf("server_create: failed: %01d\n", __LINE__); return; }
-	sprintf_s(m_sMemName, IPC_MAX_ADDR, "%s_mem", m_sAddr);
+	// Determine the name of the memory and event objects
+	m_sAddr = connectionName.append("_IPC");
+	std::string m_sEvtAvail = connectionName.append("_evtAvail");
+	std::string m_sEvtFilled = connectionName.append("_evtFilled");
+	std::string m_sMemName = connectionName.append("_sharedMem");
 
 	// Create the events
-	m_hSignal = CreateEventA(NULL, FALSE, FALSE, (LPCSTR)m_sEvtFilled);
-	if (m_hSignal == NULL || m_hSignal == INVALID_HANDLE_VALUE) { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); printf("server_create: failed: %01d\n", __LINE__); return; }
-	m_hAvail = CreateEventA(NULL, FALSE, FALSE, (LPCSTR)m_sEvtAvail);
-	if (m_hAvail == NULL || m_hSignal == INVALID_HANDLE_VALUE) { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); printf("server_create: failed: %01d\n", __LINE__); return; }
+	m_hSignal = CreateEventA(NULL, FALSE, FALSE, m_sEvtFilled.c_str());
+	if (m_hSignal == NULL || m_hSignal == INVALID_HANDLE_VALUE)
+	{
+		throw std::exception(m_sEvtFilled.append(" - Event creation failed.").c_str());
+	}
+	
+	m_hAvail = CreateEventA(NULL, FALSE, FALSE, m_sEvtAvail.c_str());
+	if (m_hAvail == NULL || m_hSignal == INVALID_HANDLE_VALUE)
+	{
+		throw std::exception(m_sEvtAvail.append(" - Event creation failed.").c_str());
+	}
 
 	// Create the file mapping
-	m_hMapFile = CreateFileMapping(	INVALID_HANDLE_VALUE,
-		NULL,
-		PAGE_READWRITE,
-		0,
-		sizeof(MemBuff),
-		(LPCWSTR)m_sMemName);
-	if (m_hMapFile == NULL || m_hMapFile == INVALID_HANDLE_VALUE)  { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); printf("server_create: failed: %01d\n", __LINE__); return; }
+	m_hMapFile = CreateFileMapping(	INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE,	0, sizeof(MemBuff), widen(m_sMemName).c_str());
+	if (m_hMapFile == NULL || m_hMapFile == INVALID_HANDLE_VALUE)
+	{ 
+		throw std::exception(m_sMemName.append(" - CreateFileMapping failed.").c_str());
+	}
 
 	// Map to the file
 	m_pBuf = (MemBuff*)MapViewOfFile(	m_hMapFile,				// handle to map object
-		FILE_MAP_ALL_ACCESS,	// read/write permission
-		0,
-		0,
-		sizeof(MemBuff)); 
-	if (m_pBuf == NULL) { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); printf("server_create: failed: %01d\n", __LINE__); return; }
+										FILE_MAP_ALL_ACCESS,	// read/write permission
+										0,
+										0,
+										sizeof(MemBuff)); 
+	if (m_pBuf == NULL)
+	{ 
+		throw std::exception(m_sMemName.append(" - MapViewOfFile() failed.").c_str());
+	}
 
 	// Clear the buffer
 	ZeroMemory(m_pBuf, sizeof(MemBuff));
@@ -86,6 +77,7 @@ void IPC::Server::create(void)
 		m_pBuf->m_Blocks[N].Next = (N+1);
 		m_pBuf->m_Blocks[N].Prev = (N-1);
 	}
+
 	m_pBuf->m_Blocks[N].Next = 0;
 	m_pBuf->m_Blocks[N].Prev = (IPC_BLOCK_COUNT-2);
 
@@ -95,10 +87,6 @@ void IPC::Server::create(void)
 	m_pBuf->m_WriteEnd = 1;
 	m_pBuf->m_WriteStart = 1;
 
-	// Release memory
-	free(m_sEvtAvail);
-	free(m_sEvtFilled);
-	free(m_sMemName);
 };
 
 void IPC::Server::close(void)
@@ -135,7 +123,7 @@ void IPC::Server::close(void)
 IPC::Block* IPC::Server::getBlock(DWORD dwTimeout)
 {
 	// Grab another block to read from
-	// Enter a continous loop (this is to make sure the operation is atomic)
+	// Enter a continuous loop (this is to make sure the operation is atomic)
 	for (;;)
 	{
 		// Check if there is room to expand the read start cursor
@@ -175,7 +163,7 @@ void IPC::Server::retBlock(IPC::Block* pBlock)
 		if (InterlockedCompareExchange(&pBlock->doneRead, 0, 1) != 1)
 		{
 			// If we get here then another thread has already moved the pointer
-			// for us or we have reached as far as we can possible move the pointer
+			// for us or we have reached as far as we can possibly move the pointer
 			return;
 		}
 
@@ -195,7 +183,7 @@ DWORD IPC::Server::read(void *pBuff, DWORD buffSize, DWORD dwTimeout)
 	if (!pBlock) return 0;
 
 	// Copy the data
-	DWORD dwAmount = min(pBlock->Amount, buffSize);
+	DWORD dwAmount = min(pBlock->DataSize, buffSize);
 	memcpy(pBuff, pBlock->Data, dwAmount);
 
 	// Return the block
@@ -205,16 +193,8 @@ DWORD IPC::Server::read(void *pBuff, DWORD buffSize, DWORD dwTimeout)
 	return dwAmount;
 };
 
-IPC::Client::Client(void)
-{
-	// Set default params
-	m_hMapFile = 0;
-	m_hSignal = 0;
-	m_hAvail = 0;
-	m_pBuf = NULL;
-};
 
-IPC::Client::Client(char *connectAddr)
+IPC::Client::Client( std::string connectionName )
 {
 	// Set default params
 	m_hMapFile = 0;
@@ -222,48 +202,47 @@ IPC::Client::Client(char *connectAddr)
 	m_hAvail = 0;
 	m_pBuf = NULL;
 
-	// Determine the name of the memory
-	m_sAddr = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sAddr) return;
-	strcpy_s(m_sAddr, IPC_MAX_ADDR, connectAddr);
-
-	char *m_sEvtAvail = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sEvtAvail) return;
-	sprintf_s(m_sEvtAvail, IPC_MAX_ADDR, "%s_evt_avail", m_sAddr);
-
-	char *m_sEvtFilled = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sEvtFilled) { free(m_sEvtAvail); return; }
-	sprintf_s(m_sEvtFilled, IPC_MAX_ADDR, "%s_evt_filled", m_sAddr);
-
-	char *m_sMemName = (char*)malloc(IPC_MAX_ADDR);
-	if (!m_sMemName) { free(m_sEvtAvail); free(m_sEvtFilled); return; }
-	sprintf_s(m_sMemName, IPC_MAX_ADDR, "%s_mem", m_sAddr);
+	// Determine the name of the memory and event objects
+	m_sAddr = connectionName.append("_IPC");
+	std::string m_sEvtAvail = connectionName.append("_evtAvail");
+	std::string m_sEvtFilled = connectionName.append("_evtFilled");
+	std::string m_sMemName = connectionName.append("_sharedMem");
 
 	// Create the events
-	m_hSignal = CreateEventA(NULL, FALSE, FALSE, (LPCSTR)m_sEvtFilled);
-	if (m_hSignal == NULL || m_hSignal == INVALID_HANDLE_VALUE) { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); return; }
-	m_hAvail = CreateEventA(NULL, FALSE, FALSE, (LPCSTR)m_sEvtAvail);
-	if (m_hAvail == NULL || m_hSignal == INVALID_HANDLE_VALUE) { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); return; }
+	m_hSignal = CreateEventA(NULL, FALSE, FALSE, m_sEvtFilled.c_str());
+	if (m_hSignal == NULL || m_hSignal == INVALID_HANDLE_VALUE)
+	{
+		throw std::exception(m_sEvtFilled.append(" - Event creation failed.").c_str());
+	}
+
+	m_hAvail = CreateEventA(NULL, FALSE, FALSE, m_sEvtAvail.c_str());
+	if (m_hAvail == NULL || m_hSignal == INVALID_HANDLE_VALUE)
+	{
+		throw std::exception(m_sEvtAvail.append(" - Event creation failed.").c_str());
+	}
 
 	// Open the shared file
 	m_hMapFile = OpenFileMapping(	FILE_MAP_ALL_ACCESS,	// read/write access
-		FALSE,					// do not inherit the name
-		(LPCWSTR)m_sMemName);	// name of mapping object
-	if (m_hMapFile == NULL || m_hMapFile == INVALID_HANDLE_VALUE)  { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); return; }
-
+									FALSE,					// do not inherit the name
+									widen(m_sMemName).c_str());	// name of mapping object
+	if (m_hMapFile == NULL || m_hMapFile == INVALID_HANDLE_VALUE)
+	{ 
+		throw std::exception(m_sMemName.append(" - OpenFileMapping() failed.").c_str());
+	}
 
 	// Map to the file
 	m_pBuf = (MemBuff*)MapViewOfFile(	m_hMapFile,				// handle to map object
-		FILE_MAP_ALL_ACCESS,	// read/write permission
-		0,
-		0,
-		sizeof(MemBuff)); 
-	if (m_pBuf == NULL) { free(m_sEvtAvail); free(m_sEvtFilled); free(m_sMemName); return; }
+										FILE_MAP_ALL_ACCESS,	// read/write permission
+										0,
+										0,
+										sizeof(MemBuff)); 
+	if (m_pBuf == NULL)
+	{
+		throw std::exception(m_sMemName.append(" - MapViewOfFile() failed.").c_str());
+	}
 
 	// Release memory
-	free(m_sEvtAvail);
-	free(m_sEvtFilled);
-	free(m_sMemName);
+
 };
 
 IPC::Client::~Client(void)
@@ -346,7 +325,7 @@ DWORD IPC::Client::write(void *pBuff, DWORD amount, DWORD dwTimeout)
 	// Copy the data
 	DWORD dwAmount = min(amount, IPC_BLOCK_SIZE);
 	memcpy(pBlock->Data, pBuff, dwAmount);
-	pBlock->Amount = dwAmount;
+	pBlock->DataSize = dwAmount;
 
 	// Post the block
 	postBlock(pBlock);

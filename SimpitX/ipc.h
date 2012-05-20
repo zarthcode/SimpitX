@@ -49,7 +49,7 @@ private:
 		volatile long m_ReadStart;		// Start of the read cursor
 		
 		volatile long m_WriteEnd;		// End of the write cursor
-		volatile long m_WriteEnd;		// Start of the write cursor
+		volatile long m_WriteStart;		// Start of the write cursor
 	};
 
 	
@@ -77,14 +77,14 @@ public:
 	// Exposed functions
 
 		DWORD					read(void *pBuff, DWORD buffSize, DWORD timeout = INFINITE);
-		char*					getAddress(void) { return m_sAddr; };
+		const char*				getAddress(void) { return m_sAddr.c_str(); };
 
 		// Block functions
 		Block*					getBlock(DWORD dwTimeout = INFINITE);
 		void					retBlock(Block* pBlock);
 
 		// Create and destroy functions
-		void					create(void);
+		void create(std::string connectionName);
 		void					close(void);
 
 	protected:
@@ -93,7 +93,7 @@ public:
 	private:
 
 		// Internal variables
-		char					*m_sAddr;		// Address of this server
+		std::string				m_sAddr;		// Address of this server
 		HANDLE					m_hMapFile;		// Handle to the mapped memory file
 		HANDLE					m_hSignal;		// Event used to signal when data exists
 		HANDLE					m_hAvail;		// Event used to signal when some blocks become available
@@ -104,10 +104,11 @@ public:
 	// Client class
 	class Client
 	{
+
 	public:
+
 		// Construct / Destruct
-		Client(void);
-		Client(char *connectAddr);
+		Client(std::string connectionName);
 		virtual ~Client();
 
 		// Exposed functions
@@ -121,15 +122,19 @@ public:
 		BOOL					IsOk(void) { if (m_pBuf) return true; else return false; };
 
 	private:
+
 		// Internal variables
-		char					*m_sAddr;		// Address of this server
+		std::string				m_sAddr;		// Address of this server
 		HANDLE					m_hMapFile;		// Handle to the mapped memory file
 		HANDLE					m_hSignal;		// Event used to signal when data exists
 		HANDLE					m_hAvail;		// Event used to signal when some blocks become available
 		MemBuff					*m_pBuf;		// Buffer that points to the shared memory
 
+
 	};
 
-}
+
+
+};
 
 #endif
