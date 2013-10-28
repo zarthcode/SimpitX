@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MFCDX>
+	<Server type="local" host="localhost" />
+	<Window name="Left MFCD" position="0,0" size="512,256">
+		<Binding source="LMFCD" offset="0,0" size="256,256"/>
+		<!--
+				Unimplemented sources/display types
+				<Binding source="RWR" source="network" address="192.168.0.1"/>
+			-->
+	</Window>
+	<Window name="Right MFCD" position="512,0" size="512,256">
+		<Binding source="RMFCD" offset="256,0" size="256,256"/>
+		<!--
+				Unimplemented sources/display types
+				
+			-->
+	</Window>
+	<Device name="ZarthCode USB SimpitX" id="0">
+		<Binding source="CDU" />
+	</Device>
+	<Device name="ZarthCode USB SimpitX" id="1">
+		<Binding source="RWR" />
+	</Device>
+
+</MFCDX>

@@ -8,7 +8,7 @@
 #define IPC_BLOCK_SIZE 4096
 
 // Number of blocks available for use
-#define IPC_BLOCK_COUNT 128
+#define IPC_BLOCK_COUNT 256
 
 // Maximum size for the address string
 #define IPC_MAX_ADDR 256

@@ -62,7 +62,7 @@ bool MFCDX::saveTextureToDisk( IDirect3DBaseTexture9* pTextureOfInterest )
 
 	filenamestream << GetDirectoryFile(filenamebuffer);
 
-	add_log("Saving render surface to image file: %s", filenamestream.str().c_str());
+	add_log("Saving texture to image file: %s", filenamestream.str().c_str());
 
 	HRESULT result = D3DXSaveTextureToFile(filenamestream.str().c_str(), D3DXIFF_JPG, pTextureOfInterest, NULL);
 
@@ -72,6 +72,31 @@ bool MFCDX::saveTextureToDisk( IDirect3DBaseTexture9* pTextureOfInterest )
 		return false;
 	}
 	
+	add_log("\tSave Successful");
+	return true;
+
+}
+
+
+bool MFCDX::saveTextureToMem( IDirect3DBaseTexture9* pTextureOfInterest )
+{
+	IDirect3DTexture9* pTexture = static_cast<IDirect3DTexture9*>(pTextureOfInterest);
+	// Store the frame id number
+
+	// Get dimensions
+
+	// Copy texture data to shared memory
+	D3DLOCKED_RECT *pLockedRect = nullptr;
+	HRESULT result = pTexture->LockRect(0, pLockedRect, NULL, D3DLOCK_READONLY);
+
+	if (result != D3D_OK)
+	{
+		add_log("\Texture readonly lock failed.");
+		return false;
+	}
+
+	
+
 	add_log("\tSave Successful");
 	return true;
 
@@ -262,6 +287,7 @@ void MFCDX::SwapMFCDs()
 {
 	bEnable = !bEnable;
 }
+
 
 int MFCDX::PollingSpeed;
 

@@ -49,6 +49,8 @@ public:
 
 	static void saveSurfaceToDisk(IDirect3DSurface9* pSurfaceOfInterest);
 	static bool saveTextureToDisk(IDirect3DBaseTexture9* pTextureOfInterest);
+
+	static bool saveTextureToMem(IDirect3DBaseTexture9* pTextureOfInterest);
 	static void pollSurfaces();
 	static void pollTextures();
 

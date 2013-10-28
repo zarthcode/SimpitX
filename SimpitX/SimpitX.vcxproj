@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FrameSource.h" />
     <ClInclude Include="ipc.h" />
     <ClInclude Include="misc.h" />
     <ClInclude Include="pointerconverter.h" />
